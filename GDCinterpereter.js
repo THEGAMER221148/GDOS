@@ -34,8 +34,9 @@ function simplifyExpressions(line){
     let operation = "";
     let i = 0;
     while(i < line.length){
+        let originalLocation = i;
         if(!isNaN(line[i])){
-            let originalLocation = i;
+            originalLocation = i;
             tempNum1 = "";
             tempNum2 = "";
             operation = "";
@@ -45,10 +46,9 @@ function simplifyExpressions(line){
             }
             if(ops.includes(line[i])){
                 operation = line[i];
-                console.log(operation);
                 i++;
-                if(!isNaN(Number(line[i])) || line[i] == "."){
-                    while(!isNaN(Number(line[i])) || line[i] == "." || i < line.length){
+                if(!isNaN(Number(line[i]))){
+                    while(!isNaN(Number(line[i])) || line[i] == "."){
                         tempNum2 += line[i];
                         i++;
                     }
@@ -85,8 +85,11 @@ function simplifyExpressions(line){
                         default:
                             break;
                     }
+                    console.log(line);
                     i = originalLocation;
                 }
+            }else{
+                i++;
             }
         }else{
             i++;

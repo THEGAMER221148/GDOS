@@ -1,5 +1,5 @@
 const text = document.getElementById("terminalText");
-const forbiddenKeys = ["shift", "escape", "tab", "delete", "arrowup", "arrowdown", "arrowleft", "arrowright", "control", "f1", "f2", "f3", "f4", "f5", "f6", "f7", "f8", "f9", "f10", "f11", "f12"];
+const forbiddenKeys = ["shift", "escape", "tab", "delete", "arrowup", "arrowdown", "arrowleft", "arrowright", "control", "capslock", "end", "home", "pagedown", "pageup", "f1", "f2", "f3", "f4", "f5", "f6", "f7", "f8", "f9", "f10", "f11", "f12"];
 let storedString = text.innerHTML;
 let selectedChar = storedString.length;
 let currentLine = "";
