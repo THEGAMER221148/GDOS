@@ -81,8 +81,8 @@ function simplifyExpressions(line){
                     default:
                         break;
                 }
+                i = originalLocation;
             }
-            i = originalLocation;
         }else{
             i++;
         }
