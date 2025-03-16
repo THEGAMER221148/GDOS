@@ -43,45 +43,54 @@ function simplifyExpressions(line){
             tempNum1 = "";
             tempNum2 = "";
             operation = "";
-            while(!isNaN(Number(line[i]))){
+            while(!isNaN(Number(line[i])) || line[i] == "."){
                 tempNum1 += line[i];
                 i++;
             }
             if(ops.includes(line[i])){
                 operation = line[i];
+                console.log(operation);
                 i++;
-                while(!isNaN(Number(line[i]))){
-                    tempNum2 += line[i];
-                    i++;
+                if(!isNaN(Number(line[i])) || line[i] == "."){
+                    while(!isNaN(Number(line[i])) || line[i] == "."){
+                        tempNum2 += line[i];
+                        i++;
+                    }
+                    tempNum1 = Number(tempNum1);
+                    tempNum2 = Number(tempNum2);
+                    switch (operation) {
+                        case "+":
+                            line = line.replace(`${tempNum1}+${tempNum2}`, `${tempNum1 + tempNum2}`);
+                            break;
+                        case "-":
+                            line = line.replace(`${tempNum1}-${tempNum2}`, `${tempNum1 - tempNum2}`);
+                            break;
+                        case "*":
+                            line = line.replace(`${tempNum1}*${tempNum2}`, `${tempNum1 * tempNum2}`);
+                            break;
+                        case "/":
+                            line = line.replace(`${tempNum1}/${tempNum2}`, `${tempNum1 / tempNum2}`);
+                            break;
+                        case "^":
+                            line = line.replace(`${tempNum1}^${tempNum2}`, `${Math.pow(tempNum1, tempNum2)}`);
+                            break;
+                        case "√":
+                            line = line.replace(`${tempNum1}√${tempNum2}`, `${Math.pow(tempNum2, 1/tempNum1)}`);
+                            break;
+                        case "?":
+                            line = line.replace(`${tempNum1}?${tempNum2}`, `${tempNum1 == tempNum2? "⊤" : "⊥"}`);
+                            break;
+                        case ">":
+                            line = line.replace(`${tempNum1}>${tempNum2}`, `${tempNum1 > tempNum2? "⊤" : "⊥"}`);
+                            break;
+                        case "<":
+                            line = line.replace(`${tempNum1}<${tempNum2}`, `${tempNum1 < tempNum2? "⊤" : "⊥"}`);
+                            break;
+                        default:
+                            break;
+                    }
+                    i = originalLocation;
                 }
-                tempNum1 = Number(tempNum1);
-                tempNum2 = Number(tempNum2);
-                switch (operation) {
-                    case "+":
-                        line = line.replace(`${tempNum1}+${tempNum2}`, `${tempNum1 + tempNum2}`);
-                        break;
-                    case "-":
-                        line = line.replace(`${tempNum1}-${tempNum2}`, `${tempNum1 - tempNum2}`);
-                        break;
-                    case "*":
-                        line = line.replace(`${tempNum1}*${tempNum2}`, `${tempNum1 * tempNum2}`);
-                        break;
-                    case "/":
-                        line = line.replace(`${tempNum1}/${tempNum2}`, `${tempNum1 / tempNum2}`);
-                        break;
-                    case "^":
-                        line = line.replace(`${tempNum1}^${tempNum2}`, `${Math.pow(tempNum1, tempNum2)}`);
-                        break;
-                    case "√":
-                        line = line.replace(`${tempNum1}^${tempNum2}`, `${Math.pow(tempNum2, 1/tempNum1)}`);
-                        break;
-                    case "?":
-                        line = line.replace(`${tempNum1}?${tempNum2}`, `${tempNum1 == tempNum2? "⊤" : "⊥"}`);
-                        break;
-                    default:
-                        break;
-                }
-                i = originalLocation;
             }
         }else{
             i++;
