@@ -3,7 +3,7 @@ const forbiddenKeys = ["shift", "escape", "tab", "delete", "arrowup", "arrowdown
 let storedString = text.innerHTML;
 let selectedChar = storedString.length;
 
-import runGDC from "./gdcCompiler.JS";
+import runGDC from "./GDCinterpereter.js";
 
 window.addEventListener("keydown", function(event){
     if(event.key.toLowerCase() == "backspace"){
