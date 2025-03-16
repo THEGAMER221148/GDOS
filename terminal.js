@@ -1,85 +1,89 @@
 const text = document.getElementById("terminalText");
-const forbiddenKeys = ["shift", "escape", "tab", "delete", "arrowup", "arrowdown", "arrowleft", "arrowright",];
+const forbiddenKeys = ["shift", "escape", "tab", "delete", "arrowup", "arrowdown", "arrowleft", "arrowright", "control", "f1", "f2", "f3", "f4", "f5", "f6", "f7", "f8", "f9", "f10", "f11", "f12"];
 let storedString = text.innerHTML;
 let selectedChar = storedString.length;
+let currentLine = "";
 
 import runGDC from "./GDCinterpereter.js";
 
 window.addEventListener("keydown", function(event){
     if(event.key.toLowerCase() == "backspace"){
-        if(storedString[storedString.length-1] == ";" || storedString[storedString.length-1] == ">"){
+        if(currentLine[currentLine.length-1] == ";" || currentLine[currentLine.length-1] == ">"){
             let temp = "";
-            for(let scanIndex = storedString.length-1; scanIndex >= storedString.length-6; scanIndex--){
-                temp += storedString[scanIndex];
-                if(storedString[scanIndex] == "&" || storedString[scanIndex] == "<"){
+            for(let scanIndex = currentLine.length-1; scanIndex >= currentLine.length-7; scanIndex--){
+                temp += currentLine[scanIndex];
+                if(currentLine[scanIndex] == "&" || currentLine[scanIndex] == "<"){
                     break;
                 }
             }
             console.log(temp);
-            if(temp == ";pma&"){storedString = storedString.substring(0, storedString.length-5);}
-            else if(temp == ";tl&"){storedString = storedString.substring(0, storedString.length-4);}
-            else if(temp == ";rrar&"){storedString = storedString.substring(0, storedString.length-6);}
-            else if(temp == ";tg&"){storedString = storedString.substring(0, storedString.length-4);}
-            else if(temp == ";touq&"){storedString = storedString.substring(0, storedString.length-6);}
-            else if(temp == ";sopa&"){storedString = storedString.substring(0, storedString.length-6);}
-            else if(temp != ">rb<"){storedString = storedString.substring(0, storedString.length-1);}
+            if(temp == ";pma&"){currentLine = currentLine.substring(0, currentLine.length-5);}
+            else if(temp == ";tl&"){currentLine = currentLine.substring(0, currentLine.length-4);}
+            else if(temp == ";tg&"){currentLine = currentLine.substring(0, currentLine.length-4);}
+            else if(temp == ";touq&"){currentLine = currentLine.substring(0, currentLine.length-6);}
+            else if(temp == ";sopa&"){currentLine = currentLine.substring(0, currentLine.length-6);}
+            else if(temp != ">rb<"){currentLine = currentLine.substring(0, currentLine.length-1);}
         }else{
-            storedString = storedString.substring(0, storedString.length-1);
+            currentLine = currentLine.substring(0, currentLine.length-1);
         }
     }else if(event.key.toLowerCase() == "enter"){
-        let i = storedString.length;
-        let temp = "";
-        while(storedString[i] != ">"){
-            i--;
-            temp = storedString[i] + temp;
-        }
-        runGDC(temp.substring(1, temp.length));
-        storedString += " <br> ";
+        storedString += currentLine + " <br> ";
+        runGDC(currentLine);
+        currentLine = "";
     }else if(event.key == "<"){
-        if(storedString[storedString.length-1] == "-"){
-            storedString = storedString.substring(0, storedString.length-1);
-            storedString += "&larr;";
+        if(currentLine[currentLine.length-1] == "-"){
+            currentLine = currentLine.substring(0, currentLine.length-1);
+            currentLine += "←";
         }else{
-            storedString += "&lt;";
+            currentLine += "&lt;";
         }
     }else if(event.key == ">"){
-        if(storedString[storedString.length-1] == "-"){
-            storedString = storedString.substring(0, storedString.length-1);
-            storedString += "&rarr;";
+        if(currentLine[currentLine.length-1] == "-"){
+            currentLine = currentLine.substring(0, currentLine.length-1);
+            currentLine += "→";
         }else{
-            storedString += "&gt;";
+            currentLine += "&gt;";
         }
     }else if(event.key == '"'){
-        storedString += "&quot;";
+        currentLine += "&quot;";
     }else if(event.key == "'"){
-        storedString += "&apos;";
+        currentLine += "&apos;";
     }else if(event.key == "&"){
-        storedString += "&amp;";
-    }else if(event.key == "ArrowLeft"){
-        storedString += "&larr;";
-    }else if(event.key == "ArrowRight"){
-        storedString += "&rarr;";
+        currentLine += "&amp;";
+    }else if(event.key == "ArrowDown"){
+        currentLine += "√";
+    }else if(event.key == "e"){
+        if(currentLine.substring(currentLine.length-3, currentLine.length) == "tru"){
+            currentLine = currentLine.substring(0, currentLine.length-3);
+            currentLine += "⊤";
+        }else if(currentLine.substring(currentLine.length-4, currentLine.length) == "fals"){
+            currentLine = currentLine.substring(0, currentLine.length-4);
+            currentLine += "⊥";
+        }else{
+            currentLine += "e";
+        }
     }else if(!forbiddenKeys.includes(event.key.toLowerCase())){
-        storedString += event.key;
+        currentLine += event.key;
         console.log(event.key);
     }
-    text.innerHTML = storedString + "|";
+    text.innerHTML = `<p style="color:rgb(200, 200, 200)">` + storedString + `</p>` + currentLine + "|";
 });
 
 function printToTerminal(msg){
     storedString += msg;
-    text.innerHTML = storedString;
+    text.innerHTML = `<p style="color:rgb(200, 200, 200)">` + storedString + `</p>` + currentLine + "|";
 }
 
 function clearTerminal(){
+    currentLine = "";
     storedString = "";
     text.innerHTML = "";
 }
 
 setInterval(() => {
-    text.innerHTML = storedString + "|";
+    text.innerHTML = `<p style="color:rgb(200, 200, 200)">` + storedString + `</p>` + currentLine + "|";
     setTimeout(() => {
-        text.innerHTML = storedString + " ";
+        text.innerHTML = `<p style="color:rgb(200, 200, 200)">` + storedString + `</p>` + currentLine + " ";
     }, 500);
 }, 1000);
 
