@@ -4,6 +4,7 @@ import { printToTerminal, clearTerminal } from "./terminal.js";
 let index = 0;
 let code = "";
 const ops = ["+", "-", "*", "/", "^", "√", "?", "!", ">", "<"];
+
 function scanUntil(char, line, idx){
     let start = idx;
     let scan = "";
@@ -19,16 +20,11 @@ function scanUntil(char, line, idx){
 }
 
 function getVars(line){
-    let i = 0;
-    let scan;
-    while(i < line.length){
-        scan = scanUntil(".", line, i);
-        i += scan.index;
-        if(mem[scan.result] != undefined){
-            console.log(mem[scan.result]);
-            line.replace(scan.result, mem[scan.result]);
+    line.split(".").forEach((value) => {
+        if(value in mem){
+            line = line.replace(`.${value}.`, mem[value]);
         }
-    }
+    })
     return line;
 }
 
@@ -52,7 +48,7 @@ function simplifyExpressions(line){
                 console.log(operation);
                 i++;
                 if(!isNaN(Number(line[i])) || line[i] == "."){
-                    while(!isNaN(Number(line[i])) || line[i] == "."){
+                    while(!isNaN(Number(line[i])) || line[i] == "." || i < line.length){
                         tempNum2 += line[i];
                         i++;
                     }
@@ -121,8 +117,14 @@ export default function runGDC(CODE){
             line = getVars(line);
             //simplify math
             line = simplifyExpressions(line);
-            printToTerminal(`<p style="color: lime">${line}</p>`);
-            console.log(index-code.length);
+            //handle var declerations
+            if(line[0] == `~`){
+                let name = scanUntil("=", line, 1);
+                let val = scanUntil(";", line, name.index + 1);
+                mem[name.result] = val.result;
+                printToTerminal(`<p style="color: lime">"${name.result}" has been added to temporary memory and assigned "${val.result}"</p>`);
+            }
+            printToTerminal(`<p style="color: lime">${line}</p>`)
         }else{
             printToTerminal(`<p style="color: red">Interpereter error: scan exceeded string length. Did you forget to include a semicolon to enclose the line?</p>`);
             return;
