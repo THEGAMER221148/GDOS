@@ -20,9 +20,9 @@ function scanUntil(char, line, idx){
 }
 
 function getVars(line){
-    line.split(".").forEach((value) => {
+    line.split("\\").forEach((value) => {
         if(value in mem){
-            line = line.replace(`.${value}.`, mem[value]);
+            line = line.replace(`\\${value}\\`, mem[value]);
         }
     })
     return line;
