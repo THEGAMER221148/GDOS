@@ -183,9 +183,9 @@ export default function runGDC(CODE){
     let temp2;
     let lines = code.split(";");
     while(index < lines.length){
-        let line = scanUntil(";", code, index).result;
-        index += line.length+1;
+        let line = lines[index];
         line = runLine(line);
+        index ++;
     }
 }
 
