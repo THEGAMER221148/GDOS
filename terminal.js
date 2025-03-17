@@ -1,4 +1,5 @@
 const text = document.getElementById("terminalText");
+const indicator = document.getElementById("thing");
 const forbiddenKeys = ["shift", "escape", "tab", "delete", "arrowup", "arrowdown", "arrowleft", "arrowright", "control", "capslock", "end", "home", "pagedown", "pageup", "f1", "f2", "f3", "f4", "f5", "f6", "f7", "f8", "f9", "f10", "f11", "f12"];
 let storedString = text.innerHTML;
 let selectedChar = storedString.length;
@@ -27,9 +28,13 @@ window.addEventListener("keydown", function(event){
             currentLine = currentLine.substring(0, currentLine.length-1);
         }
     }else if(event.key.toLowerCase() == "enter"){
-        storedString += currentLine + " <br> ";
-        runGDC(currentLine);
-        currentLine = "";
+        if(event.shiftKey){
+            currentLine += " <br> ";
+        }else{
+            storedString += currentLine;
+            runGDC(currentLine);
+            currentLine = "";
+        }
     }else if(event.key == "<"){
         if(currentLine[currentLine.length-1] == "-"){
             currentLine = currentLine.substring(0, currentLine.length-1);
@@ -62,16 +67,18 @@ window.addEventListener("keydown", function(event){
         }else{
             currentLine += "e";
         }
+    }else if(event.key == "Tab"){
+        currentLine += "    ";
     }else if(!forbiddenKeys.includes(event.key.toLowerCase())){
         currentLine += event.key;
         console.log(event.key);
     }
-    text.innerHTML = `<div style="color:rgb(200, 200, 200)">` + storedString + `</div>` + currentLine + "|";
+    text.innerHTML = `<span style="color:rgb(200, 200, 200)">${storedString}</span><span style="color: white">${currentLine}</span>`;
 });
 
-function printToTerminal(msg){
-    storedString += msg;
-    text.innerHTML = `<div style="color:rgb(200, 200, 200)">` + storedString + `</div>` + currentLine + "|";
+function printToTerminal(msg, color){
+    storedString += `<br><span style="color:${color}">${msg}</span><br>`;
+    text.innerHTML = `<span style="color:rgb(200, 200, 200)">` + storedString + `</span>` + currentLine;
 }
 
 function clearTerminal(){
@@ -81,9 +88,11 @@ function clearTerminal(){
 }
 
 setInterval(() => {
-    text.innerHTML = `<div style="color:rgb(200, 200, 200)">` + storedString + `</div>` + currentLine + "|";
+    // text.innerHTML = `<span style="color:rgb(200, 200, 200)">` + storedString + `</span>` + currentLine + "|";
+    indicator.innerHTML = "|";
     setTimeout(() => {
-        text.innerHTML = `<div style="color:rgb(200, 200, 200)">` + storedString + `</div>` + currentLine + " ";
+        // text.innerHTML = `<span style="color:rgb(200, 200, 200)">` + storedString + `</span>` + currentLine + " ";
+        indicator.innerHTML = " ";
     }, 500);
 }, 1000);
 

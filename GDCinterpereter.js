@@ -1,7 +1,6 @@
 let mem = {};
 const terminalText = document.getElementById("terminalText");
 import { printToTerminal, clearTerminal } from "./terminal.js";
-let index = 0;
 let code = "";
 const ops = ["+", "-", "*", "/", "^", "√", "?", "!", ">", "<"];
 
@@ -13,13 +12,12 @@ function scanUntil(char, line, idx){
         idx++;
         if(idx > line.length-1){
             return {result: scan, index: idx, success: false};
-            return;
         }
     }
     return {result: scan, index: idx, success: true};
 }
 
-function getVars(line){
+function getVars(line){ //unused
     line.split("\\").forEach((value) => {
         if(value in mem){
             line = line.replace(`\\${value}\\`, mem[value]);
@@ -99,6 +97,77 @@ function simplifyExpressions(line){
     return line;
 }
 
+function runLine(lineToRun){
+    //get variables
+    lineToRun = getVars(lineToRun);
+    //simplify math
+    lineToRun = simplifyExpressions(lineToRun);
+    let statements = lineToRun.split(":");
+    //handle commands
+    switch (statements[0]) {
+        case "help":
+            window.location = "/GDOS/documentation";
+            break;
+
+        case "print":
+            statements[1] = statements[1].replaceAll("'", "&apos; ");
+            statements[1] = statements[1].replaceAll("<", "&lt; ");
+            statements[1] = statements[1].replaceAll(">", "&gt; ");
+            statements[1] = statements[1].replaceAll('"', "&quot; ");
+            statements[1] = statements[1].replaceAll("&", "&amps; ");
+            printToTerminal(statements[1], 'white');
+            break;
+
+        case "if":
+            if(statements[1] == "⊤"){
+                runGDC(statements[2]);
+                break;
+            }else if(statements[3] == "else"){
+                runGDC(statements[4]);
+            }else{
+
+            }
+            break;
+            
+        case "terminal":
+            switch (statements[1]) {
+                case "clear":
+                    clearTerminal();
+                    break;
+                default:
+                    printToTerminal(`Expected sub-command after "${statements[0]}". Type "help;" for more information.`, "yellow");
+                    break;
+            }
+            break;
+
+        case "memory":
+            switch (statements[1]) {
+                case "setkey":
+                    mem[statements[2]] = statements[3];
+                    printToTerminal(`"${statements[2]}" has been assigned "${statements[3]}" in temporary memory`, "lime");
+                    break;
+                
+                case "clearall":
+                    mem = {};
+                    break;
+
+                case "deletekey":
+                    delete mem[statements[2]];
+                    break;
+
+                default:
+                    printToTerminal(`Expected sub-command after "${statements[0]}". Type "help;" for more information.`, "yellow");
+                    break;
+            }
+            break;
+
+        default:
+            printToTerminal(`"${statements[0]}" is not recognized as a command.`, "yellow");
+            break;
+    }
+    return lineToRun;
+}
+
 export default function runGDC(CODE){
     //remove whitespace and line breaks
     CODE = CODE.replaceAll(" ", "");
@@ -109,29 +178,14 @@ export default function runGDC(CODE){
     CODE = CODE.replaceAll("&amps;", "&");
     console.log(CODE);
     code = CODE;
-    index = 0;
+    let index = 0;
     let temp;
     let temp2;
-    while(index < code.length){
-        if(scanUntil(";", code, index).success){
-            let line = scanUntil(";", code, index).result;
-            index += line.length+1;
-            //get variables
-            line = getVars(line);
-            //simplify math
-            line = simplifyExpressions(line);
-            //handle var declerations
-            if(line[0] == `~`){
-                let name = scanUntil("=", line, 1);
-                let val = scanUntil(";", line, name.index + 1);
-                mem[name.result] = val.result;
-                printToTerminal(`<p style="color: lime">"${name.result}" has been added to temporary memory and assigned "${val.result}"</p>`);
-            }
-            printToTerminal(`<p style="color: lime">${line}</p>`)
-        }else{
-            printToTerminal(`<p style="color: red">Interpereter error: scan exceeded string length. Did you forget to include a semicolon to enclose the line?</p>`);
-            return;
-        }
+    let lines = code.split(";");
+    while(index < lines.length){
+        let line = scanUntil(";", code, index).result;
+        index += line.length+1;
+        line = runLine(line);
     }
 }
 
