@@ -66,12 +66,12 @@ window.addEventListener("keydown", function(event){
         currentLine += event.key;
         console.log(event.key);
     }
-    text.innerHTML = `<p style="color:rgb(200, 200, 200)">` + storedString + `</p>` + currentLine + "|";
+    text.innerHTML = `<div style="color:rgb(200, 200, 200)">` + storedString + `</div>` + currentLine + "|";
 });
 
 function printToTerminal(msg){
     storedString += msg;
-    text.innerHTML = `<p style="color:rgb(200, 200, 200)">` + storedString + `</p>` + currentLine + "|";
+    text.innerHTML = `<div style="color:rgb(200, 200, 200)">` + storedString + `</div>` + currentLine + "|";
 }
 
 function clearTerminal(){
@@ -81,9 +81,9 @@ function clearTerminal(){
 }
 
 setInterval(() => {
-    text.innerHTML = `<p style="color:rgb(200, 200, 200)">` + storedString + `</p>` + currentLine + "|";
+    text.innerHTML = `<div style="color:rgb(200, 200, 200)">` + storedString + `</div>` + currentLine + "|";
     setTimeout(() => {
-        text.innerHTML = `<p style="color:rgb(200, 200, 200)">` + storedString + `</p>` + currentLine + " ";
+        text.innerHTML = `<div style="color:rgb(200, 200, 200)">` + storedString + `</div>` + currentLine + " ";
     }, 500);
 }, 1000);
 
