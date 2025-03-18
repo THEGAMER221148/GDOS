@@ -33,12 +33,12 @@ function simplifyExpressions(line){
     let i = 0;
     while(i < line.length){
         let originalLocation = i;
-        if(!isNaN(line[i])){
+        if(!isNaN(line[i]) || line[i] == "-"){
             originalLocation = i;
             tempNum1 = "";
             tempNum2 = "";
             operation = "";
-            while(!isNaN(Number(line[i])) || line[i] == "."){
+            while(!isNaN(Number(line[i])) || line[i] == "." || line[i] == "-"){
                 tempNum1 += line[i];
                 i++;
             }
@@ -46,7 +46,7 @@ function simplifyExpressions(line){
                 operation = line[i];
                 i++;
                 if(!isNaN(Number(line[i]))){
-                    while(!isNaN(Number(line[i])) || line[i] == "."){
+                    while(!isNaN(Number(line[i])) || line[i] == "." || line[i] == "-"){
                         tempNum2 += line[i];
                         i++;
                     }
@@ -103,6 +103,7 @@ function runLine(lineToRun){
     //simplify math
     lineToRun = simplifyExpressions(lineToRun);
     let statements = lineToRun.split(":");
+    let progressIndex = 1;
     //handle commands
     switch (statements[0]) {
         case "help":
@@ -118,14 +119,15 @@ function runLine(lineToRun){
             printToTerminal(statements[1], 'white');
             break;
 
-        case "if":
-            if(statements[1] == "⊤"){
-                runGDC(statements[2]);
-                break;
-            }else if(statements[3] == "else"){
-                runGDC(statements[4]);
-            }else{
+        case "progress":
+            if (!statements[2] == "unless" || !statements[3] == "⊤") {
+                progressIndex += statements[1];
+            }
+            break;
 
+        case "regress":
+            if (!statements[2] == "unless" || !statements[3] == "⊤") {
+                progressIndex -= statements[1];
             }
             break;
             
@@ -165,7 +167,7 @@ function runLine(lineToRun){
             printToTerminal(`"${statements[0]}" is not recognized as a command.`, "yellow");
             break;
     }
-    return lineToRun;
+    return progressIndex;
 }
 
 export default function runGDC(CODE){
@@ -176,16 +178,16 @@ export default function runGDC(CODE){
     CODE = CODE.replaceAll("&gt;", ">");
     CODE = CODE.replaceAll("&quot;", '"');
     CODE = CODE.replaceAll("&amps;", "&");
+    CODE = CODE.replaceAll("<br>", "")
     console.log(CODE);
     code = CODE;
     let index = 0;
     let temp;
     let temp2;
     let lines = code.split(";");
-    while(index < lines.length){
+    while(index <= lines.length-2){
         let line = lines[index];
-        line = runLine(line);
-        index ++;
+        index += runLine(line);
     }
 }
 
