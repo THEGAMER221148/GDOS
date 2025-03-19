@@ -1,17 +1,17 @@
 let mem = {};
 const terminalText = document.getElementById("terminalText");
-import { printToTerminal, clearTerminal } from "./terminal.js";
+import { printToTerminal, clearTerminal, runProgram } from "./terminal.js";
 import { storage } from "./directories.js";
 const ops = ["+", "-", "*", "/", "^", "√", "?", "!", ">", "<"];
 
 document.getElementById("fileInput").addEventListener("change", (ev) => {
     const file = ev.target.files[0];
     const fileReader = new FileReader();
+    fileReader.readAsText(file);
     fileReader.onload = function (event) {
-        console.log(event.target.result); // This contains the file content
+        storage.savedPrograms[ev.target.files[0].name.split(".")[0]] = event.target.result;
+        printToTerminal(`"${ev.target.files[0].name.split(".")[0]}" has been installed.`, "lime");
     };
-    storage.savedPrograms[ev.target.files[0].name.split(".")[0]] = fileReader.readAsText(file);
-    printToTerminal(`"${ev.target.files[0].name.split(".")[0]}" has been installed.`, "lime");
 });
 
 function scanUntil(char, line, idx){
@@ -191,22 +191,13 @@ function runLine(lineToRun){
             switch (statements[1]) {
                 case "list":
                     printToTerminal(`keys: `);
-                    storage.getKeys().forEach((item) => {
-                        printToTerminal(`    "${item}": "${item == "savedPrograms"?  "programs folder" : storage[item]}"`, "lime");
+                    Object.keys(storage).forEach((item) => {
+                        printToTerminal(`"${item}": "${item == "savedPrograms"?  "programs folder" : storage[item]}"`, "lime");
                     });
                     printToTerminal(`programs: `);
-                    storage.savedPrograms.getKeys().forEach((item) => {
-                        printToTerminal(`    "${item}"`, "lime");
+                    Object.keys(storage.savedPrograms).forEach((item) => {
+                        printToTerminal(`"${item}"`, "lime");
                     });
-                    break;
-                
-                case "run":
-                    if(statements[2] in storage.savedPrograms){
-                        printToTerminal(`Running "${statements[2]}"...`);
-                        runGDC(storage.savedPrograms[statements[2]]);
-                    }else{
-                        printToTerminal(`"${statements[2]}" is not installed as a program. Did you install or create a program called "${statements[2]}"? Make sure you typed the name correctly, names are case-sensitive.`, "yellow");
-                    }
                     break;
                     
                 case "setkey":
@@ -225,16 +216,30 @@ function runLine(lineToRun){
                 case "deletekey":
                     delete storage[statements[2]];
                     break;
-                
-                case "install":
-                    document.getElementById("fileInput").click();
-                    break;
+            
                 default:
                     printToTerminal(`Expected sub-command after "${statements[0]}". Type "help;" for more information.`, "yellow");
                     break;
             }
             localStorage.setItem("storage", storage);
             break;
+
+        case "run":
+            if(statements[1] in storage.savedPrograms){
+                // printToTerminal(`Running "${statements[1]}"...`);
+                // runGDC(storage.savedPrograms[statements[1]]);
+                console.log(storage.savedPrograms[statements[1]]);
+                console.log(storage.savedPrograms);
+                runProgram([statements[1]], storage.savedPrograms[statements[1]]);
+            }else{
+                printToTerminal(`"${statements[1]}" is not installed as a program. Did you install or create a program called "${statements[1]}"? Make sure you typed the name correctly, names are case-sensitive.`, "yellow");
+            }
+            break;
+
+        case "install":
+            document.getElementById("fileInput").click();
+            break;
+
         default:
             printToTerminal(`"${statements[0]}" is not recognized as a command.`, "yellow");
             break;

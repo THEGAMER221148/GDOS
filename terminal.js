@@ -2,7 +2,7 @@ const text = document.getElementById("terminalText");
 let indicator = "|";
 const forbiddenKeys = ["alt", "shift", "escape", "tab", "delete", "arrowup", "arrowdown", "arrowleft", "arrowright", "control", "capslock", "end", "home", "pagedown", "pageup", "f1", "f2", "f3", "f4", "f5", "f6", "f7", "f8", "f9", "f10", "f11", "f12"];
 const wrappers = ["\\", "⊤", "⊥"];
-const commands = ["help:", "print:", "regress:", "progress:", "unless:", "memory:", "setkey:", "deletekey:", "terminal:", "clear;", "clearall;", "listkeys;", "setarray:", "storage:", "run:", "list;"];
+const commands = ["help:", "print:", "regress:", "progress:", "unless:", "memory:", "setkey:", "deletekey:", "terminal:", "clear;", "clearall;", "listkeys;", "setarray:", "storage:", "run:", "list;", "install;"];
 const operators =["+", "-", "*", "^", "√"];
 let storedString = text.innerHTML;
 let selectedChar = storedString.length;
@@ -128,4 +128,11 @@ for(let i = 0; i < splits.length; i++){
     }
 };
 
-export {printToTerminal, clearTerminal};
+function runProgram(name, programCode){
+    printToTerminal(`Running "${name}"...`, "lime");
+    setTimeout(() => {
+        runGDC(programCode);
+    }, 500);
+}
+
+export { printToTerminal, clearTerminal, runProgram };
