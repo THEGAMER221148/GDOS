@@ -1,11 +1,7 @@
-let main = {
+let storage = {
     savedPrograms: {
 
     },
-    settings: {
-        textSize: "20px",
-        showCommandOutput: true,
-    }
 }
 
-export { main };
+export { storage };

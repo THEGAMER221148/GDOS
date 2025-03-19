@@ -1,9 +1,18 @@
 let mem = {};
 const terminalText = document.getElementById("terminalText");
 import { printToTerminal, clearTerminal } from "./terminal.js";
-import { main } from "./directories.js";
-let code = "";
+import { storage } from "./directories.js";
 const ops = ["+", "-", "*", "/", "^", "√", "?", "!", ">", "<"];
+
+document.getElementById("fileInput").addEventListener("change", (ev) => {
+    const file = ev.target.files[0];
+    const fileReader = new FileReader();
+    fileReader.onload = function (event) {
+        console.log(event.target.result); // This contains the file content
+    };
+    storage.savedPrograms[ev.target.files[0].name.split(".")[0]] = fileReader.readAsText(file);
+    printToTerminal(`"${ev.target.files[0].name.split(".")[0]}" has been installed.`, "lime");
+});
 
 function scanUntil(char, line, idx){
     let start = idx;
@@ -169,7 +178,7 @@ function runLine(lineToRun){
 
                 case "listkeys":
                     mem.getKeys().forEach((item) => {
-                        printToTerminal(item, "lime");
+                        printToTerminal(`"${item}": "${mem[item]}"`, "lime");
                     });
                     break;
                 default:
@@ -177,7 +186,55 @@ function runLine(lineToRun){
                     break;
             }
             break;
+        
+        case "storage":
+            switch (statements[1]) {
+                case "list":
+                    printToTerminal(`keys: `);
+                    storage.getKeys().forEach((item) => {
+                        printToTerminal(`    "${item}": "${item == "savedPrograms"?  "programs folder" : storage[item]}"`, "lime");
+                    });
+                    printToTerminal(`programs: `);
+                    storage.savedPrograms.getKeys().forEach((item) => {
+                        printToTerminal(`    "${item}"`, "lime");
+                    });
+                    break;
+                
+                case "run":
+                    if(statements[2] in storage.savedPrograms){
+                        printToTerminal(`Running "${statements[2]}"...`);
+                        runGDC(storage.savedPrograms[statements[2]]);
+                    }else{
+                        printToTerminal(`"${statements[2]}" is not installed as a program. Did you install or create a program called "${statements[2]}"? Make sure you typed the name correctly, names are case-sensitive.`, "yellow");
+                    }
+                    break;
+                    
+                case "setkey":
+                    storage[statements[2]] = statements[3];
+                    printToTerminal(`"${statements[2]}" has been assigned "${statements[3]}" in system storage`, "lime");
+                    break;
+                
+                case "setarray":
+                    storage[statements[2]] = [];
+                    for(let i = 3; i < statements.length; i++){
+                        storage[statements[2]].push(statements[i]);
+                    }
+                    printToTerminal(`"${statements[2]}" has been added to system storage and contains "${storage[statements[2]]}"`, "lime")
+                    break;
 
+                case "deletekey":
+                    delete storage[statements[2]];
+                    break;
+                
+                case "install":
+                    document.getElementById("fileInput").click();
+                    break;
+                default:
+                    printToTerminal(`Expected sub-command after "${statements[0]}". Type "help;" for more information.`, "yellow");
+                    break;
+            }
+            localStorage.setItem("storage", storage);
+            break;
         default:
             printToTerminal(`"${statements[0]}" is not recognized as a command.`, "yellow");
             break;
@@ -195,11 +252,10 @@ export default function runGDC(CODE){
     CODE = CODE.replaceAll("&amps;", "&");
     CODE = CODE.replaceAll("<br>", "")
     console.log(CODE);
-    code = CODE;
     let index = 0;
     let temp;
     let temp2;
-    let lines = code.split(";");
+    let lines = CODE.split(";");
     while(index <= lines.length-2){
         let line = lines[index];
         index += runLine(line);
