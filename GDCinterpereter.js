@@ -1,6 +1,7 @@
 let mem = {};
 const terminalText = document.getElementById("terminalText");
 import { printToTerminal, clearTerminal } from "./terminal.js";
+import { main } from "./directories.js";
 let code = "";
 const ops = ["+", "-", "*", "/", "^", "√", "?", "!", ">", "<"];
 
@@ -109,7 +110,7 @@ function runLine(lineToRun){
     //handle commands
     switch (statements[0]) {
         case "help":
-            window.location = "/GDOS/documentation";
+            window.location = "/GDOS/docs";
             break;
 
         case "print":

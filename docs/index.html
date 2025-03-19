@@ -1,0 +1,119 @@
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Gedagadegadocumentation</title>
+        <style>
+            body {
+                background-color: rgb(10, 10, 10);
+                color: white;
+                font-family: monospace;
+                
+            }
+            h1 {
+                font-size: 4vw;
+                line-height: 4vw;
+                margin: 1vh;
+                color:lightgreen;
+            }
+            h2 {
+                font-size: 3vw;
+                line-height: 3vw;
+                margin: 1vh;
+                color: greenyellow;
+            }
+            h3 {
+                font-size: 2vw;
+                line-height: 2vw;
+                margin: 1vh;
+                color: green;
+            }
+            li {
+                color: white;
+                font-size: 1.5vw;
+                margin-left: 2vw;
+            }
+            article {
+                color: white;
+                font-size: 1.5vw;
+            }
+            code {
+                padding-left: 10px;
+                padding-right: 10px;
+                border-radius: 5px;
+                background-color: black;
+                color: lightblue;
+            }
+            strong {
+                font-size: larger;
+            }
+        </style>
+    </head>
+    <body>
+        <article>
+            <h1>Gedagadegadagadacode Documentation</h1>
+            <h3>Welcome to the GCode documentation! This site contains reference material to help everyone learn GCode.</h3>
+            <h2>Links</h2>
+            <ol style="color: lime; font-size: 2vw; margin-left: 2vw;">
+                <li><a href="#intro">Introduction</a></li>
+                <li><a href="#exp">Expressions</a></li>
+                <li><a href="#cmds">Commands</a></li>
+            </ol>
+            <h2 id="intro">Introduction to Gedagadegadagadacode</h2>
+            <p>Gedagadegadagadacode (which will be shortened to "GCode" from now on) is the primary coding language used to interact with Gedagadegadoperating System (which will be shortened to "GDOS" from now on) and is used both when
+                navigating the system using the <code>terminal</code> and when creating programs that GDOS can run. A GCode program is usually comprised of a set of commands that are executed from top-to-bottom. GCode is unique in many
+                ways, and although it does not have a real-world parallel, it still revolves around many real-life coding concepts such as variables, functions, and, to some extent, objects. In order to use GDOS, you must have some
+                understanding of GCode.</p>
+            <h2 id="exp">Mathematical Expressions</h2>
+            <p>Like most modern coding languages, GCode features built-in operators for mathematical expressions. These include:</p>
+            <ul>
+                <li>The <code>+</code> operator, which adds two numbers.</li>
+                <li>The <code>-</code> operator, which subtracts the left number from the right one.</li>
+                <li>The <code>*</code> operator, which multiplies two numbers.</li>
+                <li>The <code>/</code> operator, which divides the left number by the right one.</li>
+                <li>The <code>^</code> operator, which raises the left number to the power of the right one.</li>
+                <li>The <code>√</code> operator, which returns the left number's root of the right number. This symbol can be typed by pressing the down arrow on your keyboard.</li>
+            </ul>
+            <p><strong>GCODE DOES NOT USE STANDARD ORDER OF OPERATIONS!</strong> Instead, GCode performs mathematical operations from left-to-right. For example, <code>2+2*2</code> will return <code>8</code>, not <code>6</code>, because the interpereter will solve <code>2+2</code> and then multiply the result by <code>2</code>.</p>
+            <p>Along with mathematical operators, GCode features some logical operators as well. These include:</p>
+            <ul>
+                <li>The <code>?</code> operator, which checks if two values are equal. This works with all data types.</li>
+                <li>The <code>!</code> operator, which checks if two values are not equal. This also works with all data types.</li>
+                <li>The <code>></code> operator, which checks if the left number is greater than the right one.</li>
+                <li>The <code><</code> operator, which checks if the left number is less than the right one.</li>
+            </ul>
+            <p>You may notice that when you try typing "true" or "false" into the terminal, the words get replaced by <code>⊤</code> or <code>⊥</code> symbols. These respectively represent the boolean values "true" and "false".</p>
+            <h3>Examples</h3>
+                <li><code>print: 1+1;</code> - prints "2" in the terminal.</li>
+                <li><code>print: 3√27;</code> - prints the 3rd root of 27, which is 3, in the terminal</li>
+                <li><code>print: 3√27+3/3+1^2;</code> - performs the operations from left-to-right and prints "9" in the terminal.</li>
+            </ul>
+            <h2 id="cmds">Commands</h2>
+            <p>A GCode program is almost entirely comprised of commands. A command typically starts with a root command that is followed by sub-commands, each seperated by colons, and parameters that are also seperated by colons. All sub-commands and parameters must be seperated by colons, and every command line ends with a semicolon.
+                Below are all of the built-in commands that GCode has to offer.
+            </p>
+            <h3>print: [value];</h3>
+                <p>This command prints the given value to the terminal.</p>
+            <h3>help;</h3>
+                <p>This command brings you to this documentation page.</p>
+            <h3>memory: [sub-command, possible parameters];</h3>
+            <p>This command allows the program to store data in the program's runtime memory, acting very similar to variables in other programming languages. Runtime memory is reset every time a program runs, meaning keys stored here cannot be accessed once the program is stopped or restarted.<br>The <code>memory</code> command must be followed by one of its sub-commands. Below is a list of its sub-commands and their uses.</p>
+            <ul>
+                <li><code>memory: setkey: [keyname]: [keyvalue];</code> - Sets a key in runtime memory with the name given in the first parameter and the value given in the second. This command can be used to create new keys as well as update the values of existing ones.</li>
+                <li><code>memory: setarray: [keyname]: [keyvalues];</code> - Sets a key in runtime memory as an array with the name given in the first perameter and the specified values given in the further ones. Array values are seperated by colons.</li>
+                <li><code>memory: deletekey: [keyname];</code> - Deletes a key from runtime memory.</li>
+                <li><code>memory: clearall;</code> - Clears runtime memory, deleting all data stored in it.</li>
+                <li><code>memory: listkeys;</code> - Lists all keys currently stored in runtime memory and their respective values.</li>
+            </ul>
+            <h3>terminal: [sub-command];</h3>
+            <p>This command can be used to write to the system's terminal. This command must follow its sub-commands, as listed below:</p>
+            <ul>
+                <li><code>terminal: clear;</code> clears all text in the terminal.</li>
+            </ul>
+            <h3>regress: [numeric parameter]: unless: [conditional parameter];</h3>
+            <p>This command regresses the program's flow by an amount of lines determined by its first parameter, unless the second parameter is true. This is the intended way of creating loops in GCode.</p>
+            <h3>progress: [numeric parameter]: unless: [conditional parameter];</h3>
+            <p>This command progresses the program's flow by an amount of lines determined by its first parameter, unless the second parameter is true. This is the GCode equivalent of an "if" statement.</p>
+        </article>
+    </body>
+</html>
