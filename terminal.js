@@ -1,9 +1,9 @@
 const text = document.getElementById("terminalText");
 let indicator = "|";
 const forbiddenKeys = ["alt", "shift", "escape", "tab", "delete", "arrowup", "arrowdown", "arrowleft", "arrowright", "control", "capslock", "end", "home", "pagedown", "pageup", "f1", "f2", "f3", "f4", "f5", "f6", "f7", "f8", "f9", "f10", "f11", "f12"];
-const wrappers = ["\\"];
-const commands = ["help:", "print:", "regress:", "progress:", "unless:", "memory:", "setkey:", "deletekey:", "terminal:", "clear", "clearall"];
-const operators =["+", "-", "/", "*", "^", "√", "⊤", "⊥", "?", "!", "<", ">"];
+const wrappers = ["\\", "⊤", "⊥"];
+const commands = ["help:", "print:", "regress:", "progress:", "unless:", "memory:", "setkey:", "deletekey:", "terminal:", "clear", "clearall", "listkeys", "setarray"];
+const operators =["+", "-", "*", "^", "√"];
 let storedString = text.innerHTML;
 let selectedChar = storedString.length;
 let currentLine = "";
@@ -35,7 +35,7 @@ window.addEventListener("keydown", function(event){
         if(event.shiftKey){
             currentLine += " <br> ";
         }else{
-            storedString += currentLine;
+            storedString += currentLine + "<br>";
             runGDC(currentLine);
             prevLine = currentLine;
             currentLine = "";
@@ -83,13 +83,18 @@ window.addEventListener("keydown", function(event){
     }
     text.innerHTML = `<span style="color:rgb(200, 200, 200)">${storedString}</span><span style="color: white">${currentLine}${indicator}</span>`;
     commands.forEach((item) => {
-        text.innerHTML = text.innerHTML.replace(item, `<span style="color:yellow;">${item}</span>`);
+        text.innerHTML = text.innerHTML.replaceAll(item, `<span style="color:yellow;">${item}</span>`);
     });
-    for(let i = 0; i < text.innerHTML.split("\\").length; i++){
-        if(i%2 == 0){
-            text.innerHTML = text.innerHTML.replace(`\\${text.innerHTML.split("\\")[i]}\\`, `<span style="color:skyblue;">\\${text.innerHTML.split("\\")[i]}\\</span>`);
+    operators.forEach((op) => {
+        text.innerHTML = text.innerHTML.replaceAll(op, `<span style="color:green;">${op}</span>`);
+    });
+    let splits = text.innerHTML.split("\\");
+    for(let i = 0; i < splits.length; i++){
+        if(i%2 != 0){
+            text.innerHTML = text.innerHTML.replaceAll(`\\${splits[i]}\\`, `<span style="color:skyblue;">\\${splits[i]}\\</span>`);
         }
     };
+    
 });
 
 function printToTerminal(msg, color){
@@ -111,5 +116,16 @@ function clearTerminal(){
 //         indicator = " ";
 //     }, 500);
 // }, 1000);
+
+text.innerHTML = `<span style="color:rgb(200, 200, 200)">${storedString}</span><span style="color: white">${currentLine}${indicator}</span>`;
+commands.forEach((item) => {
+    text.innerHTML = text.innerHTML.replace(item, `<span style="color:yellow;">${item}</span>`);
+});
+let splits = text.innerHTML.split("\\");
+for(let i = 0; i < splits.length; i++){
+    if(i%2 != 0){
+        text.innerHTML = text.innerHTML.replace(`\\${splits[i]}\\`, `<span style="color:skyblue;">\\${splits[i]}\\</span>`);
+    }
+};
 
 export {printToTerminal, clearTerminal};

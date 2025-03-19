@@ -17,12 +17,14 @@ function scanUntil(char, line, idx){
     return {result: scan, index: idx, success: true};
 }
 
-function getVars(line){ //unused
+function getVars(line){
     line.split("\\").forEach((value) => {
         if(value in mem){
             line = line.replace(`\\${value}\\`, mem[value]);
-        }
-    })
+        }//else if(typeof value == Array){
+        //     line = line.replace(`\\${value}\\→`)
+        // }
+    });
     return line;
 }
 
@@ -120,13 +122,13 @@ function runLine(lineToRun){
             break;
 
         case "progress":
-            if (!statements[2] == "unless" || !statements[3] == "⊤") {
+            if (statements[2] != "unless" || statements[3] != "⊤") {
                 progressIndex += statements[1];
             }
             break;
 
         case "regress":
-            if (!statements[2] == "unless" || !statements[3] == "⊤") {
+            if (statements[2] != "unless" || statements[3] != "⊤") {
                 progressIndex -= statements[1];
             }
             break;
@@ -149,6 +151,13 @@ function runLine(lineToRun){
                     printToTerminal(`"${statements[2]}" has been assigned "${statements[3]}" in temporary memory`, "lime");
                     break;
                 
+                case "setarray":
+                    mem[statements[2]] = [];
+                    for(let i = 3; i < statements.length; i++){
+                        mem[statements[2]].push(statements[i]);
+                    }
+                    printToTerminal(`"${statements[2]}" has been added to temporary memory and contains "${mem[statements[2]]}"`, "lime")
+                    break;
                 case "clearall":
                     mem = {};
                     break;
@@ -157,6 +166,11 @@ function runLine(lineToRun){
                     delete mem[statements[2]];
                     break;
 
+                case "listkeys":
+                    mem.getKeys().forEach((item) => {
+                        printToTerminal(item, "lime");
+                    });
+                    break;
                 default:
                     printToTerminal(`Expected sub-command after "${statements[0]}". Type "help;" for more information.`, "yellow");
                     break;
