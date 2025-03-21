@@ -1,6 +1,6 @@
 let mem = {};
 const terminalText = document.getElementById("terminalText");
-import { printToTerminal, clearTerminal, runProgram } from "./terminal.js";
+import { printToTerminal, clearTerminal, runProgram, stopTerminal } from "./terminal.js";
 import { storage } from "./directories.js";
 const ops = ["+", "-", "*", "/", "^", "√", "?", "!", ">", "<"];
 
@@ -86,6 +86,9 @@ function simplifyExpressions(line){
                         case "?":
                             line = line.replace(`${tempNum1}?${tempNum2}`, `${tempNum1 == tempNum2? "⊤" : "⊥"}`);
                             break;
+                        case "!":
+                            line = line.replace(`${tempNum1}?${tempNum2}`, `${tempNum1 != tempNum2? "⊤" : "⊥"}`);
+                            break;
                         case ">":
                             line = line.replace(`${tempNum1}>${tempNum2}`, `${tempNum1 > tempNum2? "⊤" : "⊥"}`);
                             break;
@@ -105,6 +108,17 @@ function simplifyExpressions(line){
             i++;
         }
     }
+    // tempNum1 = "";
+    // tempNum2 = "";
+    // operation = "";
+    // i = 0;
+    // while(i < line.length){
+    //     let originalLocation = i;
+    //     if(line[i] == "("){
+    //         tempNum1 = scanUntil(")", line, i).result;
+    //         let splits = tempNum1.split("")
+    //     }
+    // }
     console.log("expressions simplified!");
     return line;
 }
@@ -221,7 +235,7 @@ function runLine(lineToRun){
                     printToTerminal(`Expected sub-command after "${statements[0]}". Type "help;" for more information.`, "yellow");
                     break;
             }
-            localStorage.setItem("storage", storage);
+            localStorage.setItem("storage", Object.toS);
             break;
 
         case "run":
@@ -239,6 +253,15 @@ function runLine(lineToRun){
         case "install":
             document.getElementById("fileInput").click();
             break;
+        
+        case "create":
+            storage.savedPrograms[statements[1]] = "print: Welcome to GCode!";
+            printToTerminal(`Created new program called "${statements[1]}". Use the "open: [program name]" command to start editing.`);
+            break;
+
+        case "open":
+            stopTerminal(statements[1]);
+            break;
 
         default:
             printToTerminal(`"${statements[0]}" is not recognized as a command.`, "yellow");
@@ -255,7 +278,7 @@ export default function runGDC(CODE){
     CODE = CODE.replaceAll("&gt;", ">");
     CODE = CODE.replaceAll("&quot;", '"');
     CODE = CODE.replaceAll("&amps;", "&");
-    CODE = CODE.replaceAll("<br>", "")
+    CODE = CODE.replaceAll("<br>", "");
     console.log(CODE);
     let index = 0;
     let temp;
