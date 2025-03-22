@@ -3,13 +3,14 @@ let indicator = "|";
 const forbiddenKeys = ["alt", "shift", "escape", "tab", "delete", "arrowup", "arrowdown", "arrowleft", "arrowright", "control", "capslock", "end", "home", "pagedown", "pageup", "f1", "f2", "f3", "f4", "f5", "f6", "f7", "f8", "f9", "f10", "f11", "f12"];
 const wrappers = ["\\", "⊤", "⊥"];
 const commands = ["help:", "print:", "regress:", "progress:", "unless:", "memory:", "setkey:", "deletekey:", "terminal:", "clear;", "clearall;", "listkeys;", "setarray:", "storage:", "run:", "list;", "install;", "open:", "create:"];
-const operators =["+", "-", "*", "^", "√"];
+const operators = ["+", "-", "*", "^", "√"];
+const sussys = ["&amp;", "&lt;", "&quot;", "&apos;", "<br>"];
 let storedString = text.innerHTML;
 let selectedChar = storedString.length;
 let currentLine = "";
 let prevLine = currentLine;
-let programBuilder = true;
-let currentProgram = ""
+let programBuilder = false;
+let currentProgram = "";
 
 import { storage } from "./directories.js";
 import runGDC from "./GDCinterpereter.js";
@@ -17,88 +18,54 @@ import runGDC from "./GDCinterpereter.js";
 window.addEventListener("keydown", function(event){
     if(!programBuilder){
         //terminal code
-        if(event.key.toLowerCase() == "backspace"){
-            if(currentLine[currentLine.length-1] == ";" || currentLine[currentLine.length-1] == ">"){
-                let temp = "";
-                for(let scanIndex = currentLine.length-1; scanIndex >= currentLine.length-7; scanIndex--){
-                    temp += currentLine[scanIndex];
-                    if(currentLine[scanIndex] == "&" || currentLine[scanIndex] == "<"){
-                        break;
+        switch (event.key.toLowerCase()) {
+            case "backspace":
+                let broken = false;
+                sussys.forEach((item) => {
+                    console.log(currentLine.lastIndexOf(item));
+                    if (currentLine.lastIndexOf(item) == currentLine.length()-item.length() && !broken) {
+                        currentLine = currentLine.substring(0, item.length);
+                        broken = true;
                     }
-                }
-                console.log(temp);
-                if(temp == ";pma&"){currentLine = currentLine.substring(0, currentLine.length-5);}
-                else if(temp == ";tl&"){currentLine = currentLine.substring(0, currentLine.length-4);}
-                else if(temp == ";tg&"){currentLine = currentLine.substring(0, currentLine.length-4);}
-                else if(temp == ";touq&"){currentLine = currentLine.substring(0, currentLine.length-6);}
-                else if(temp == ";sopa&"){currentLine = currentLine.substring(0, currentLine.length-6);}
-                else if(temp != ">rb<"){currentLine = currentLine.substring(0, currentLine.length-1);}
-            }else{
-                currentLine = currentLine.substring(0, currentLine.length-1);
-            }
-        }else if(event.key.toLowerCase() == "enter"){
-            if(event.shiftKey){
-                currentLine += " <br> ";
-            }else{
-                storedString += currentLine + "<br>";
-                runGDC(currentLine);
-                prevLine = currentLine;
-                currentLine = "";
-            }
-        }else if(event.key == "<"){
-            if(currentLine[currentLine.length-1] == "-"){
-                currentLine = currentLine.substring(0, currentLine.length-1);
-                currentLine += "←";
-            }else{
-                currentLine += "&lt;";
-            }
-        }else if(event.key == ">"){
-            if(currentLine[currentLine.length-1] == "-"){
-                currentLine = currentLine.substring(0, currentLine.length-1);
-                currentLine += "→";
-            }else{
-                currentLine += "&gt;";
-            }
-        }else if(event.key == '"'){
-            currentLine += "&quot;";
-        }else if(event.key == "'"){
-            currentLine += "&apos;";
-        }else if(event.key == "&"){
-            currentLine += "&amp;";
-        }else if(event.key == "ArrowDown"){
-            currentLine += "√";
-        }else if(event.key == "ArrowUp"){
-            currentLine = prevLine;
-        }else if(event.key == "e"){
-            if(currentLine.substring(currentLine.length-3, currentLine.length) == "tru"){
-                currentLine = currentLine.substring(0, currentLine.length-3);
-                currentLine += "⊤";
-            }else if(currentLine.substring(currentLine.length-4, currentLine.length) == "fals"){
-                currentLine = currentLine.substring(0, currentLine.length-4);
-                currentLine += "⊥";
-            }else{
-                currentLine += "e";
-            }
+                });
+                break;
             
-        }else if(event.key == "ArrowRight"){
-            currentLine += "    ";
-        }else if(!forbiddenKeys.includes(event.key.toLowerCase())){
-            currentLine += event.key;
-            console.log(event.key);
+            case "enter":
+                currentLine += "<br>"
+                break;
+
+            case "<":
+                currentLine += "&lt;";
+                break;
+
+            case ">":
+                currentLine += "&gt;"
+                break;
+
+            case '"':
+                currentLine += "&quot;";
+                break;
+
+            case "&":
+                currentLine += "&amp;"
+                break;
+
+            case "ArrowDown":
+                currentLine += "√";
+                break;
+
+            case "ArrowUp":
+                currentLine = prevLine;
+                break;
+
+            case "'":
+                currentLine += "&apos;";
+                break;
+            case "e":
+                break;
+            default:
+                break;
         }
-        text.innerHTML = `<span style="color:rgb(200, 200, 200)">${storedString}</span><span style="color: white">${currentLine}${indicator}</span>`;
-        commands.forEach((item) => {
-            text.innerHTML = text.innerHTML.replaceAll(item, `<span style="color:yellow;">${item}</span>`);
-        });
-        operators.forEach((op) => {
-            text.innerHTML = text.innerHTML.replaceAll(op, `<span style="color:green;">${op}</span>`);
-        });
-        let splits = text.innerHTML.split("\\");
-        for(let i = 0; i < splits.length; i++){
-            if(i%2 != 0){
-                text.innerHTML = text.innerHTML.replaceAll(`\\${splits[i]}\\`, `<span style="color:skyblue;">\\${splits[i]}\\</span>`);
-            }
-        };
     }else{
         //prog builder code
         if(event.key.toLowerCase() == "backspace"){
