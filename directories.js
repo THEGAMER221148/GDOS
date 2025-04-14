@@ -4,4 +4,8 @@ let storage = {
     },
 }
 
+if(localStorage.getItem("storage") != undefined){
+    storage = JSON.parse(localStorage.getItem("storage"));
+}
+
 export { storage };

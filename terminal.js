@@ -103,10 +103,6 @@ window.addEventListener("keydown", function(event){
                 text.innerHTML = text.innerHTML.replaceAll(`\\${splits[i]}\\`, `<span style="color:skyblue;">\\${splits[i]}\\</span>`);
             }
         };
-        // splits = text.innerHTML.split("{");
-        // for(let i = 0; i < splits.length; i++){
-        //     text.innerHTML = text.innerHTML.replaceAll(`{${splits[i].substring(0, splits[i].indexOf("}"))}}`, `<span style="color:red;">{${splits[i].substring(0, splits[i].indexOf("}"))}}</span>`);
-        // };
         symbols.forEach((item) => {
             text.innerHTML = text.innerHTML.replace("{}", `<span style="color:red">{${item}}</span>`);
         });

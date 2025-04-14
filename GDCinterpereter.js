@@ -206,7 +206,7 @@ function runLine(lineToRun){
                 case "list":
                     printToTerminal(`keys: `);
                     Object.keys(storage).forEach((item) => {
-                        printToTerminal(`"${item}": "${item == "savedPrograms"?  "programs folder" : storage[item]}"`, "lime");
+                        printToTerminal(`"${item}": ${item == "savedPrograms"?  "programs folder" :  `"${storage[item]}"`}`, item == "savedPrograms"? "green" : "lime");
                     });
                     printToTerminal(`programs: `);
                     Object.keys(storage.savedPrograms).forEach((item) => {
@@ -235,7 +235,7 @@ function runLine(lineToRun){
                     printToTerminal(`Expected sub-command after "${statements[0]}". Type "help;" for more information.`, "yellow");
                     break;
             }
-            localStorage.setItem("storage", Object.toS);
+            localStorage.setItem("storage", JSON.stringify(storage));
             break;
 
         case "run":
