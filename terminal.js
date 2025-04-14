@@ -9,7 +9,7 @@ let storedString = text.innerHTML;
 let selectedChar = storedString.length;
 let currentLine = "";
 let prevLine = currentLine;
-let programBuilder = false;
+let programBuilder = false
 let currentProgram = "";
 
 import { storage } from "./directories.js";
@@ -23,15 +23,19 @@ window.addEventListener("keydown", function(event){
                 let broken = false;
                 sussys.forEach((item) => {
                     console.log(currentLine.lastIndexOf(item));
-                    if (currentLine.lastIndexOf(item) == currentLine.length()-item.length() && !broken) {
-                        currentLine = currentLine.substring(0, item.length);
+                    if (currentLine.includes(item) && currentLine.lastIndexOf(item) == currentLine.length-item.length && !broken) {
+                        currentLine = currentLine.substring(0, currentLine.length-item.length);
                         broken = true;
                     }
                 });
+                if(!broken){currentLine = currentLine.substring(0, currentLine.length-1);};
                 break;
             
             case "enter":
-                currentLine += "<br>"
+                prevLine = currentLine;
+                storedString += currentLine + "<br>";
+                runGDC(currentLine);
+                currentLine = "";
                 break;
 
             case "<":
@@ -62,10 +66,50 @@ window.addEventListener("keydown", function(event){
                 currentLine += "&apos;";
                 break;
             case "e":
+                if(currentLine.substring(currentLine.length-3, currentLine.length) == "tru"){
+                    currentLine = currentLine.substring(0, currentLine.length-3);
+                    currentLine += "⊤";
+                }else if(currentLine.substring(currentLine.length-3, currentLine.length) == "fals"){
+                    currentLine = currentLine.substring(0, currentLine.length-3);
+                    currentLine += "⊥";
+                }else{
+                    currentLine += event.key;
+                }
                 break;
             default:
+                if(!forbiddenKeys.includes(event.key.toLowerCase())){
+                    currentLine += event.key;
+                }
                 break;
+        
         }
+        text.innerHTML = `<span style="color:rgb(200, 200, 200)">${storedString}</span><span style="color: white">${currentLine}${indicator}</span>`;
+        let splits = text.innerHTML.split("{");
+        let symbols = [];
+        for(let i = 0; i < splits.length; i++){
+            symbols.push(splits[i].substring(0, splits[i].indexOf("}")));
+            text.innerHTML = text.innerHTML.replace(`{${splits[i].substring(0, splits[i].indexOf("}"))}}`, `{}`);
+        };
+        symbols.splice(0, 1);
+        commands.forEach((item) => {
+            text.innerHTML = text.innerHTML.replaceAll(item, `<span style="color:yellow;">${item}</span>`);
+        });
+        operators.forEach((op) => {
+            text.innerHTML = text.innerHTML.replaceAll(op, `<span style="color:green;">${op}</span>`);
+        });
+        splits = text.innerHTML.split("\\");
+        for(let i = 0; i < splits.length; i++){
+            if(i%2 != 0){
+                text.innerHTML = text.innerHTML.replaceAll(`\\${splits[i]}\\`, `<span style="color:skyblue;">\\${splits[i]}\\</span>`);
+            }
+        };
+        // splits = text.innerHTML.split("{");
+        // for(let i = 0; i < splits.length; i++){
+        //     text.innerHTML = text.innerHTML.replaceAll(`{${splits[i].substring(0, splits[i].indexOf("}"))}}`, `<span style="color:red;">{${splits[i].substring(0, splits[i].indexOf("}"))}}</span>`);
+        // };
+        symbols.forEach((item) => {
+            text.innerHTML = text.innerHTML.replace("{}", `<span style="color:red">{${item}}</span>`);
+        });
     }else{
         //prog builder code
         if(event.key.toLowerCase() == "backspace"){

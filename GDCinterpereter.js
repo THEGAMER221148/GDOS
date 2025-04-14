@@ -272,6 +272,13 @@ function runLine(lineToRun){
 
 export default function runGDC(CODE){
     //remove whitespace and line breaks
+    let splits = CODE.split("{");
+    let symbols = [];
+    for(let i = 0; i < splits.length; i++){
+        symbols.push(splits[i].substring(0, splits[i].indexOf("}")));
+        CODE = CODE.replace(`{${splits[i].substring(0, splits[i].indexOf("}"))}}`, `{}`);
+    };
+    symbols.splice(0, 1);
     CODE = CODE.replaceAll(" ", "");
     CODE = CODE.replaceAll("&apos;", "'");
     CODE = CODE.replaceAll("&lt;", "<");
@@ -279,7 +286,11 @@ export default function runGDC(CODE){
     CODE = CODE.replaceAll("&quot;", '"');
     CODE = CODE.replaceAll("&amps;", "&");
     CODE = CODE.replaceAll("<br>", "");
+    symbols.forEach((item) => {
+        CODE = CODE.replace("{}", item);
+    });
     console.log(CODE);
+    console.log(symbols);
     let index = 0;
     let temp;
     let temp2;
