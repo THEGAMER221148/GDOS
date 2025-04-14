@@ -137,12 +137,25 @@ function runLine(lineToRun){
             break;
 
         case "print":
-            statements[1] = statements[1].replaceAll("'", "&apos; ");
-            statements[1] = statements[1].replaceAll("<", "&lt; ");
-            statements[1] = statements[1].replaceAll(">", "&gt; ");
-            statements[1] = statements[1].replaceAll('"', "&quot; ");
-            statements[1] = statements[1].replaceAll("&", "&amps; ");
-            printToTerminal(statements[1], 'white');
+            let lineToPrint = statements[1];
+            let splits = lineToPrint.split("{");
+            let symbols = [];
+            for(let i = 0; i < splits.length; i++){
+                symbols.push(splits[i].substring(0, splits[i].indexOf("}")));
+                lineToPrint = lineToPrint.replace(`{${splits[i].substring(0, splits[i].indexOf("}"))}}`, `{}`);
+            };
+            symbols.splice(0, 1);
+            console.log(lineToPrint);
+            lineToPrint = lineToPrint.replaceAll("'", "&apos; ");
+            lineToPrint = lineToPrint.replaceAll("<", "&lt; ");
+            lineToPrint = lineToPrint.replaceAll(">", "&gt; ");
+            lineToPrint = lineToPrint.replaceAll('"', "&quot; ");
+            lineToPrint = lineToPrint.replaceAll("&", "&amps; ");
+            symbols.forEach((item) => {
+                lineToPrint = lineToPrint.replace("{}", item);
+            });
+            console.log(lineToPrint);
+            printToTerminal(lineToPrint, 'white');
             break;
 
         case "progress":
@@ -278,6 +291,7 @@ export default function runGDC(CODE){
         symbols.push(splits[i].substring(0, splits[i].indexOf("}")));
         CODE = CODE.replace(`{${splits[i].substring(0, splits[i].indexOf("}"))}}`, `{}`);
     };
+    console.log(CODE);
     symbols.splice(0, 1);
     CODE = CODE.replaceAll(" ", "");
     CODE = CODE.replaceAll("&apos;", "'");

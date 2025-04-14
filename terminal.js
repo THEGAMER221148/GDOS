@@ -32,10 +32,14 @@ window.addEventListener("keydown", function(event){
                 break;
             
             case "enter":
-                prevLine = currentLine;
-                storedString += currentLine + "<br>";
-                runGDC(currentLine);
-                currentLine = "";
+                if(event.shiftKey){
+                    currentLine += "<br>";
+                }else{
+                    prevLine = currentLine;
+                    storedString += currentLine + "<br>";
+                    runGDC(currentLine);
+                    currentLine = "";
+                }
                 break;
 
             case "<":
