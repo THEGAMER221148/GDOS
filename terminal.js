@@ -112,88 +112,98 @@ window.addEventListener("keydown", function(event){
         });
     }else{
         //prog builder code
-        if(event.key.toLowerCase() == "backspace"){
-            if(storage.savedPrograms[currentProgram][storage.savedPrograms[currentProgram].length-1] == ";" || storage.savedPrograms[currentProgram][storage.savedPrograms[currentProgram].length-1] == ">"){
-                let temp = "";
-                for(let scanIndex = storage.savedPrograms[currentProgram].length-1; scanIndex >= storage.savedPrograms[currentProgram].length-7; scanIndex--){
-                    temp += storage.savedPrograms[currentProgram][scanIndex];
-                    if(storage.savedPrograms[currentProgram][scanIndex] == "&" || storage.savedPrograms[currentProgram][scanIndex] == "<"){
-                        break;
+        switch (event.key.toLowerCase()) {
+            case "backspace":
+                let broken = false;
+                sussys.forEach((item) => {
+                    console.log(storage.savedPrograms[currentProgram].lastIndexOf(item));
+                    if (storage.savedPrograms[currentProgram].includes(item) && storage.savedPrograms[currentProgram].lastIndexOf(item) == storage.savedPrograms[currentProgram].length-item.length && !broken) {
+                        storage.savedPrograms[currentProgram] = storage.savedPrograms[currentProgram].substring(0, storage.savedPrograms[currentProgram].length-item.length);
+                        broken = true;
                     }
-                }
-                console.log(temp);
-                if(temp == ";pma&"){storage.savedPrograms[currentProgram] = storage.savedPrograms[currentProgram].substring(0, storage.savedPrograms[currentProgram].length-5);}
-                else if(temp == ";tl&"){storage.savedPrograms[currentProgram] = storage.savedPrograms[currentProgram].substring(0, storage.savedPrograms[currentProgram].length-4);}
-                else if(temp == ";tg&"){storage.savedPrograms[currentProgram] = storage.savedPrograms[currentProgram].substring(0, storage.savedPrograms[currentProgram].length-4);}
-                else if(temp == ";touq&"){storage.savedPrograms[currentProgram] = storage.savedPrograms[currentProgram].substring(0, storage.savedPrograms[currentProgram].length-6);}
-                else if(temp == ";sopa&"){storage.savedPrograms[currentProgram] = storage.savedPrograms[currentProgram].substring(0, storage.savedPrograms[currentProgram].length-6);}
-                else if(temp == ">rb<"){storage.savedPrograms[currentProgram] = storage.savedPrograms[currentProgram].substring(0, storage.savedPrograms[currentProgram].length-5); console.log("line break deleted.");}
-            }else{
-                storage.savedPrograms[currentProgram] = storage.savedPrograms[currentProgram].substring(0, storage.savedPrograms[currentProgram].length-1);
-            }
-        }else if(event.key.toLowerCase() == "enter"){
-            if(event.shiftKey){
-                storage.savedPrograms[currentProgram] += " <br> ";
-            }else{
-                storedString += storage.savedPrograms[currentProgram] + "<br>";
-                runGDC(storage.savedPrograms[currentProgram]);
-                prevLine = storage.savedPrograms[currentProgram];
-                storage.savedPrograms[currentProgram] = "";
-            }
-        }else if(event.key == "<"){
-            if(storage.savedPrograms[currentProgram][storage.savedPrograms[currentProgram].length-1] == "-"){
-                storage.savedPrograms[currentProgram] = storage.savedPrograms[currentProgram].substring(0, storage.savedPrograms[currentProgram].length-1);
-                storage.savedPrograms[currentProgram] += "←";
-            }else{
-                storage.savedPrograms[currentProgram] += "&lt;";
-            }
-        }else if(event.key == ">"){
-            if(storage.savedPrograms[currentProgram][storage.savedPrograms[currentProgram].length-1] == "-"){
-                storage.savedPrograms[currentProgram] = storage.savedPrograms[currentProgram].substring(0, storage.savedPrograms[currentProgram].length-1);
-                storage.savedPrograms[currentProgram] += "→";
-            }else{
-                storage.savedPrograms[currentProgram] += "&gt;";
-            }
-        }else if(event.key == '"'){
-            storage.savedPrograms[currentProgram] += "&quot;";
-        }else if(event.key == "'"){
-            storage.savedPrograms[currentProgram] += "&apos;";
-        }else if(event.key == "&"){
-            storage.savedPrograms[currentProgram] += "&amp;";
-        }else if(event.key == "ArrowDown"){
-            storage.savedPrograms[currentProgram] += "√";
-        }else if(event.key == "ArrowUp"){
-            storage.savedPrograms[currentProgram] = prevLine;
-        }else if(event.key == "e"){
-            if(storage.savedPrograms[currentProgram].substring(storage.savedPrograms[currentProgram].length-3, storage.savedPrograms[currentProgram].length) == "tru"){
-                storage.savedPrograms[currentProgram] = storage.savedPrograms[currentProgram].substring(0, storage.savedPrograms[currentProgram].length-3);
-                storage.savedPrograms[currentProgram] += "⊤";
-            }else if(storage.savedPrograms[currentProgram].substring(storage.savedPrograms[currentProgram].length-4, storage.savedPrograms[currentProgram].length) == "fals"){
-                storage.savedPrograms[currentProgram] = storage.savedPrograms[currentProgram].substring(0, storage.savedPrograms[currentProgram].length-4);
-                storage.savedPrograms[currentProgram] += "⊥";
-            }else{
-                storage.savedPrograms[currentProgram] += "e";
-            }
+                });
+                if(!broken){storage.savedPrograms[currentProgram] = storage.savedPrograms[currentProgram].substring(0, storage.savedPrograms[currentProgram].length-1);};
+                break;
             
-        }else if(event.key == "ArrowRight"){
-            storage.savedPrograms[currentProgram] += "    ";
-        }else if(!forbiddenKeys.includes(event.key.toLowerCase())){
-            storage.savedPrograms[currentProgram] += event.key;
-            console.log(event.key);
+            case "enter":
+                if(event.shiftKey){
+                    storage.savedPrograms[currentProgram] += "<br>";
+                }else{
+                    prevLine = storage.savedPrograms[currentProgram];
+                    storedString += storage.savedPrograms[currentProgram] + "<br>";
+                    runGDC(storage.savedPrograms[currentProgram]);
+                    storage.savedPrograms[currentProgram] = "";
+                }
+                break;
+
+            case "<":
+                storage.savedPrograms[currentProgram] += "&lt;";
+                break;
+
+            case ">":
+                storage.savedPrograms[currentProgram] += "&gt;"
+                break;
+
+            case '"':
+                storage.savedPrograms[currentProgram] += "&quot;";
+                break;
+
+            case "&":
+                storage.savedPrograms[currentProgram] += "&amp;"
+                break;
+
+            case "ArrowDown":
+                storage.savedPrograms[currentProgram] += "√";
+                break;
+
+            case "ArrowUp":
+                storage.savedPrograms[currentProgram] = prevLine;
+                break;
+
+            case "'":
+                storage.savedPrograms[currentProgram] += "&apos;";
+                break;
+            case "e":
+                if(storage.savedPrograms[currentProgram].substring(storage.savedPrograms[currentProgram].length-3, storage.savedPrograms[currentProgram].length) == "tru"){
+                    storage.savedPrograms[currentProgram] = storage.savedPrograms[currentProgram].substring(0, storage.savedPrograms[currentProgram].length-3);
+                    storage.savedPrograms[currentProgram] += "⊤";
+                }else if(storage.savedPrograms[currentProgram].substring(storage.savedPrograms[currentProgram].length-3, storage.savedPrograms[currentProgram].length) == "fals"){
+                    storage.savedPrograms[currentProgram] = storage.savedPrograms[currentProgram].substring(0, storage.savedPrograms[currentProgram].length-3);
+                    storage.savedPrograms[currentProgram] += "⊥";
+                }else{
+                    storage.savedPrograms[currentProgram] += event.key;
+                }
+                break;
+            default:
+                if(!forbiddenKeys.includes(event.key.toLowerCase())){
+                    storage.savedPrograms[currentProgram] += event.key;
+                }
+                break;
+        
         }
         text.innerHTML = `<span style="color:rgb(200, 200, 200)">${storedString}</span><span style="color: white">${storage.savedPrograms[currentProgram]}${indicator}</span>`;
+        let splits = text.innerHTML.split("{");
+        let symbols = [];
+        for(let i = 0; i < splits.length; i++){
+            symbols.push(splits[i].substring(0, splits[i].indexOf("}")));
+            text.innerHTML = text.innerHTML.replace(`{${splits[i].substring(0, splits[i].indexOf("}"))}}`, `{}`);
+        };
+        symbols.splice(0, 1);
         commands.forEach((item) => {
             text.innerHTML = text.innerHTML.replaceAll(item, `<span style="color:yellow;">${item}</span>`);
         });
         operators.forEach((op) => {
             text.innerHTML = text.innerHTML.replaceAll(op, `<span style="color:green;">${op}</span>`);
         });
-        let splits = text.innerHTML.split("\\");
+        splits = text.innerHTML.split("\\");
         for(let i = 0; i < splits.length; i++){
             if(i%2 != 0){
                 text.innerHTML = text.innerHTML.replaceAll(`\\${splits[i]}\\`, `<span style="color:skyblue;">\\${splits[i]}\\</span>`);
             }
         };
+        symbols.forEach((item) => {
+            text.innerHTML = text.innerHTML.replace("{}", `<span style="color:red">{${item}}</span>`);
+        });
         this.localStorage.setItem("storage", storage);
     }
 });

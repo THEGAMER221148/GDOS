@@ -9,8 +9,8 @@ document.getElementById("fileInput").addEventListener("change", (ev) => {
     const fileReader = new FileReader();
     fileReader.readAsText(file);
     fileReader.onload = function (event) {
-        storage.savedPrograms[ev.target.files[0].name.split(".")[0]] = event.target.result;
-        printToTerminal(`"${ev.target.files[0].name.split(".")[0]}" has been installed.`, "lime");
+        storage.savedPrograms[ev.target.files[0].name.split(".")[0].replaceAll(" ", "")] = event.target.result;
+        printToTerminal(`"${ev.target.files[0].name.split(".")[0].replaceAll(" ", "")}" has been installed.`, "lime");
     };
 });
 
@@ -267,7 +267,7 @@ function runLine(lineToRun){
                 console.log(storage.savedPrograms);
                 runProgram([statements[1]], storage.savedPrograms[statements[1]]);
             }else{
-                printToTerminal(`"${statements[1]}" is not installed as a program. Did you install or create a program called "${statements[1]}"? Make sure you typed the name correctly, names are case-sensitive.`, "yellow");
+                printToTerminal(`"${statements[1]}" is not installed as a program. Make sure you typed the name correctly, names are case-sensitive.`, "yellow");
             }
             break;
 
