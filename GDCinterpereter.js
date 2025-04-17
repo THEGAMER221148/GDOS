@@ -183,30 +183,37 @@ function runLine(lineToRun){
 
         case "memory":
             switch (statements[1]) {
-                case "setkey":
+                case "setKey":
                     mem[statements[2]] = statements[3];
                     printToTerminal(`"${statements[2]}" has been assigned "${statements[3]}" in temporary memory`, "lime");
                     break;
                 
-                case "setarray":
+                case "setArray":
                     mem[statements[2]] = [];
                     for(let i = 3; i < statements.length; i++){
                         mem[statements[2]].push(statements[i]);
                     }
                     printToTerminal(`"${statements[2]}" has been added to temporary memory and contains "${mem[statements[2]]}"`, "lime")
                     break;
-                case "clearall":
+                case "clearAll":
                     mem = {};
+                    printToTerminal(`Temporary memory has been cleared`, "lime");
                     break;
 
-                case "deletekey":
+                case "deleteKey":
                     delete mem[statements[2]];
+                    printToTerminal(`"${statements[2]}" has been deleted from temporary memory`, "lime");
                     break;
 
-                case "listkeys":
+                case "listKeys":
                     mem.getKeys().forEach((item) => {
                         printToTerminal(`"${item}": "${mem[item]}"`, "lime");
                     });
+                    break;
+                
+                case "cloneStoredKey":
+                    mem[statements[2]] = storage[statements[2]];
+                    printToTerminal(`"${statements[2]}" has been cloned to temporary memory`, "lime");
                     break;
                 default:
                     printToTerminal(`Expected sub-command after "${statements[0]}". Type "help;" for more information.`, "yellow");
@@ -227,12 +234,12 @@ function runLine(lineToRun){
                     });
                     break;
                     
-                case "setkey":
+                case "setKey":
                     storage[statements[2]] = statements[3];
                     printToTerminal(`"${statements[2]}" has been assigned "${statements[3]}" in system storage`, "lime");
                     break;
                 
-                case "setarray":
+                case "setArray":
                     storage[statements[2]] = [];
                     for(let i = 3; i < statements.length; i++){
                         storage[statements[2]].push(statements[i]);
@@ -240,8 +247,9 @@ function runLine(lineToRun){
                     printToTerminal(`"${statements[2]}" has been added to system storage and contains "${storage[statements[2]]}"`, "lime")
                     break;
 
-                case "deletekey":
+                case "deleteKey":
                     delete storage[statements[2]];
+                    printToTerminal(`"${statements[2]}" has been deleted from system storage`, "lime");
                     break;
             
                 default:
@@ -301,7 +309,7 @@ export default function runGDC(CODE){
     CODE = CODE.replaceAll("&amps;", "&");
     CODE = CODE.replaceAll("<br>", "");
     symbols.forEach((item) => {
-        CODE = CODE.replace("{}", item);
+        CODE = CODE.replace("{}", "{" + item + "}");
     });
     console.log(CODE);
     console.log(symbols);
