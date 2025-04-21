@@ -176,6 +176,9 @@ window.addEventListener("keydown", function(event){
                     storage.savedPrograms[currentProgram] += event.key;
                 }
                 break;
+
+            case "esc":
+                break;
             default:
                 if(!forbiddenKeys.includes(event.key.toLowerCase())){
                     storage.savedPrograms[currentProgram] += event.key;
