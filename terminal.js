@@ -33,7 +33,7 @@ window.addEventListener("keydown", function(event){
             
             case "enter":
                 if(event.shiftKey){
-                    currentLine += "<br>";
+                    currentLine += "�";
                 }else{
                     prevLine = currentLine;
                     storedString += currentLine + "<br>";
@@ -88,6 +88,7 @@ window.addEventListener("keydown", function(event){
         
         }
         text.innerHTML = `<span style="color:rgb(200, 200, 200)">${storedString}</span><span style="color: white">${currentLine}${indicator}</span>`;
+        text.innerHTML = text.innerHTML.replaceAll("�", "<br>");
         let splits = text.innerHTML.split("{");
         let symbols = [];
         for(let i = 0; i < splits.length; i++){
@@ -126,14 +127,7 @@ window.addEventListener("keydown", function(event){
                 break;
             
             case "enter":
-                if(event.shiftKey){
-                    storage.savedPrograms[currentProgram] += "<br>";
-                }else{
-                    prevLine = storage.savedPrograms[currentProgram];
-                    storedString += storage.savedPrograms[currentProgram] + "<br>";
-                    runGDC(storage.savedPrograms[currentProgram]);
-                    storage.savedPrograms[currentProgram] = "";
-                }
+                storage.savedPrograms[currentProgram] += "�";
                 break;
 
             case "<":
@@ -204,7 +198,7 @@ window.addEventListener("keydown", function(event){
         symbols.forEach((item) => {
             text.innerHTML = text.innerHTML.replace("{}", `<span style="color:red">{${item}}</span>`);
         });
-        this.localStorage.setItem("storage", storage);
+        this.localStorage.setItem("storage", JSON.stringify(storage));
     }
 });
 
@@ -219,10 +213,12 @@ function clearTerminal(){
     text.innerHTML = "";
 }
 
-function stopTerminal(program){
-    currentProgram = program;
+function openEditor(program){
+    currentProgram = storage.savedPrograms[program];
     programBuilder = true;
     clearTerminal();
+    printToTerminal("Welcome to the GCode editor! Start typing or press Escape to return to the terminal", "lime");
+    printToTerminal(`You are currently editing "${program}"`, "lime");
 }
 
 text.innerHTML = `<span style="color:rgb(200, 200, 200)">${storedString}</span><span style="color: white">${currentLine}${indicator}</span>`;
@@ -243,4 +239,4 @@ function runProgram(name, programCode){
     }, 100);
 }
 
-export { printToTerminal, clearTerminal, runProgram, stopTerminal};
+export { printToTerminal, clearTerminal, runProgram, openEditor};

@@ -1,6 +1,6 @@
 let mem = {};
 const terminalText = document.getElementById("terminalText");
-import { printToTerminal, clearTerminal, runProgram, stopTerminal } from "./terminal.js";
+import { printToTerminal, clearTerminal, runProgram, openEditor } from "./terminal.js";
 import { storage } from "./directories.js";
 const ops = ["+", "-", "*", "/", "^", "√", "?", "!", ">", "<"];
 
@@ -277,11 +277,11 @@ function runLine(lineToRun){
         
         case "create":
             storage.savedPrograms[statements[1]] = "print: Welcome to GCode!";
-            printToTerminal(`Created new program called "${statements[1]}". Use the "open: [program name]" command to start editing.`);
+            printToTerminal(`Created new program called "${statements[1]}". Use the "open: [program name]" command to start editing.`, "lime");
             break;
 
         case "open":
-            stopTerminal(statements[1]);
+            openEditor(statements[1]);
             break;
 
         default:
@@ -307,7 +307,7 @@ export default function runGDC(CODE){
     CODE = CODE.replaceAll("&gt;", ">");
     CODE = CODE.replaceAll("&quot;", '"');
     CODE = CODE.replaceAll("&amps;", "&");
-    CODE = CODE.replaceAll("<br>", "");
+    CODE = CODE.replaceAll("�", "");
     symbols.forEach((item) => {
         CODE = CODE.replace("{}", "{" + item + "}");
     });
