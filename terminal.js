@@ -115,35 +115,11 @@ window.addEventListener("keydown", function(event){
         //prog builder code
         switch (event.key.toLowerCase()) {
             case "backspace":
-                let broken = false;
-                sussys.forEach((item) => {
-                    console.log(storage.savedPrograms[currentProgram].lastIndexOf(item));
-                    if (storage.savedPrograms[currentProgram].includes(item) && storage.savedPrograms[currentProgram].lastIndexOf(item) == storage.savedPrograms[currentProgram].length-item.length && !broken) {
-                        storage.savedPrograms[currentProgram] = storage.savedPrograms[currentProgram].substring(0, storage.savedPrograms[currentProgram].length-item.length);
-                        broken = true;
-                    }
-                });
-                if(!broken){storage.savedPrograms[currentProgram] = storage.savedPrograms[currentProgram].substring(0, storage.savedPrograms[currentProgram].length-1);};
+                storage.savedPrograms[currentProgram] = storage.savedPrograms[currentProgram].substring(0, storage.savedPrograms[currentProgram].length-1);
                 break;
             
             case "enter":
                 storage.savedPrograms[currentProgram] += "�";
-                break;
-
-            case "<":
-                storage.savedPrograms[currentProgram] += "&lt;";
-                break;
-
-            case ">":
-                storage.savedPrograms[currentProgram] += "&gt;"
-                break;
-
-            case '"':
-                storage.savedPrograms[currentProgram] += "&quot;";
-                break;
-
-            case "&":
-                storage.savedPrograms[currentProgram] += "&amp;"
                 break;
 
             case "ArrowDown":
@@ -154,9 +130,6 @@ window.addEventListener("keydown", function(event){
                 storage.savedPrograms[currentProgram] = prevLine;
                 break;
 
-            case "'":
-                storage.savedPrograms[currentProgram] += "&apos;";
-                break;
             case "e":
                 if(storage.savedPrograms[currentProgram].substring(storage.savedPrograms[currentProgram].length-3, storage.savedPrograms[currentProgram].length) == "tru"){
                     storage.savedPrograms[currentProgram] = storage.savedPrograms[currentProgram].substring(0, storage.savedPrograms[currentProgram].length-3);
@@ -175,7 +148,14 @@ window.addEventListener("keydown", function(event){
                 break;
         
         }
-        text.innerHTML = `<span style="color:rgb(200, 200, 200)">${storedString}</span><span style="color: white">${storage.savedPrograms[currentProgram]}${indicator}</span>`;
+        let put = storage.savedPrograms[currentProgram];
+        put = put.replaceAll("'", "&apos;");
+        put = put.replaceAll("<", "&lt;");
+        put = put.replaceAll(">", "&gt;");
+        put = put.replaceAll('"', "&quot;");
+        put = put.replaceAll("&", "&amps;");
+        put = put.replaceAll("�", "<br>");
+        text.innerHTML = `<span style="color:rgb(200, 200, 200)">${storedString}</span><span style="color: white">${put}${indicator}</span>`;
         text.innerHTML = text.innerHTML.replaceAll("�", "<br>");
         let splits = text.innerHTML.split("{");
         let symbols = [];

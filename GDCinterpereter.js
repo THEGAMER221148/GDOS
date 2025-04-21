@@ -3,6 +3,7 @@ const terminalText = document.getElementById("terminalText");
 import { printToTerminal, clearTerminal, runProgram, openEditor } from "./terminal.js";
 import { storage } from "./directories.js";
 const ops = ["+", "-", "*", "/", "^", "√", "?", "!", ">", "<"];
+let cmdop = true;
 
 document.getElementById("fileInput").addEventListener("change", (ev) => {
     const file = ev.target.files[0];
@@ -185,7 +186,7 @@ function runLine(lineToRun){
             switch (statements[1]) {
                 case "setKey":
                     mem[statements[2]] = statements[3];
-                    printToTerminal(`"${statements[2]}" has been assigned "${statements[3]}" in temporary memory`, "lime");
+                    if(cmdop){printToTerminal(`"${statements[2]}" has been assigned "${statements[3]}" in temporary memory`, "lime")};
                     break;
                 
                 case "setArray":
@@ -193,16 +194,16 @@ function runLine(lineToRun){
                     for(let i = 3; i < statements.length; i++){
                         mem[statements[2]].push(statements[i]);
                     }
-                    printToTerminal(`"${statements[2]}" has been added to temporary memory and contains "${mem[statements[2]]}"`, "lime")
+                    if(cmdop){printToTerminal(`"${statements[2]}" has been added to temporary memory and contains "${mem[statements[2]]}"`, "lime")};
                     break;
                 case "clearAll":
                     mem = {};
-                    printToTerminal(`Temporary memory has been cleared`, "lime");
+                    if(cmdop){printToTerminal(`Temporary memory has been cleared`, "lime")};
                     break;
 
                 case "deleteKey":
                     delete mem[statements[2]];
-                    printToTerminal(`"${statements[2]}" has been deleted from temporary memory`, "lime");
+                    if(cmdop){printToTerminal(`"${statements[2]}" has been deleted from temporary memory`, "lime")};
                     break;
 
                 case "listKeys":
@@ -213,7 +214,7 @@ function runLine(lineToRun){
                 
                 case "cloneStoredKey":
                     mem[statements[2]] = storage[statements[2]];
-                    printToTerminal(`"${statements[2]}" has been cloned to temporary memory`, "lime");
+                    if(cmdop){printToTerminal(`"${statements[2]}" has been cloned to temporary memory`, "lime")};
                     break;
                 default:
                     printToTerminal(`Expected sub-command after "${statements[0]}". Type "help;" for more information.`, "yellow");
@@ -236,7 +237,7 @@ function runLine(lineToRun){
                     
                 case "setKey":
                     storage[statements[2]] = statements[3];
-                    printToTerminal(`"${statements[2]}" has been assigned "${statements[3]}" in system storage`, "lime");
+                    if(cmdop){printToTerminal(`"${statements[2]}" has been assigned "${statements[3]}" in system storage`, "lime")};
                     break;
                 
                 case "setArray":
@@ -244,12 +245,12 @@ function runLine(lineToRun){
                     for(let i = 3; i < statements.length; i++){
                         storage[statements[2]].push(statements[i]);
                     }
-                    printToTerminal(`"${statements[2]}" has been added to system storage and contains "${storage[statements[2]]}"`, "lime")
+                    if(cmdop){printToTerminal(`"${statements[2]}" has been added to system storage and contains "${storage[statements[2]]}"`, "lime")};
                     break;
 
                 case "deleteKey":
                     delete storage[statements[2]];
-                    printToTerminal(`"${statements[2]}" has been deleted from system storage`, "lime");
+                    if(cmdop){printToTerminal(`"${statements[2]}" has been deleted from system storage`, "lime")};
                     break;
             
                 default:
