@@ -176,6 +176,7 @@ window.addEventListener("keydown", function(event){
         
         }
         text.innerHTML = `<span style="color:rgb(200, 200, 200)">${storedString}</span><span style="color: white">${storage.savedPrograms[currentProgram]}${indicator}</span>`;
+        text.innerHTML = text.innerHTML.replaceAll("�", "<br>");
         let splits = text.innerHTML.split("{");
         let symbols = [];
         for(let i = 0; i < splits.length; i++){
@@ -214,11 +215,11 @@ function clearTerminal(){
 }
 
 function openEditor(program){
-    currentProgram = storage.savedPrograms[program];
+    currentProgram = program;
     programBuilder = true;
     clearTerminal();
-    printToTerminal("Welcome to the GCode editor! Start typing or press Escape to return to the terminal", "lime");
-    printToTerminal(`You are currently editing "${program}"`, "lime");
+    // printToTerminal("Welcome to the GCode editor! Start typing or press Escape to return to the terminal", "lime");
+    // printToTerminal(`You are currently editing "${program}"`, "lime");
 }
 
 text.innerHTML = `<span style="color:rgb(200, 200, 200)">${storedString}</span><span style="color: white">${currentLine}${indicator}</span>`;
@@ -234,9 +235,8 @@ for(let i = 0; i < splits.length; i++){
 
 function runProgram(name, programCode){
     printToTerminal(`running "${name}"...`, "lime");
-    setTimeout(() => {
-        runGDC(programCode);
-    }, 100);
+    programBuilder = false;
+    runGDC(programCode);
 }
 
 export { printToTerminal, clearTerminal, runProgram, openEditor};

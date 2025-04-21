@@ -166,7 +166,7 @@ function runLine(lineToRun){
 
         case "regress":
             if (statements[2] != "unless" || statements[3] != "⊤") {
-                progressIndex -= statements[1];
+                progressIndex -= statements[1] + 1;
             }
             break;
             
@@ -276,12 +276,17 @@ function runLine(lineToRun){
             break;
         
         case "create":
-            storage.savedPrograms[statements[1]] = "print: Welcome to GCode!";
+            storage.savedPrograms[statements[1]] = "";
             printToTerminal(`Created new program called "${statements[1]}". Use the "open: [program name]" command to start editing.`, "lime");
+            localStorage.setItem("storage", JSON.stringify(storage));
             break;
 
         case "open":
-            openEditor(statements[1]);
+            if(statements[1] in storage.savedPrograms){
+                openEditor(statements[1]);
+            }else{
+                printToTerminal(`"${statements[1]}" is not installed as a program. Make sure you typed the name correctly, names are case-sensitive.`, "yellow");
+            }
             break;
 
         default:
