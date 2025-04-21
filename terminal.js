@@ -15,6 +15,41 @@ let currentProgram = "";
 import { storage } from "./directories.js";
 import runGDC from "./GDCinterpereter.js";
 
+function displayProgramCode(){
+    let put = storage.savedPrograms[currentProgram];
+    put = put.replaceAll("'", "&apos;");
+    put = put.replaceAll("<", "&lt;");
+    put = put.replaceAll(">", "&gt;");
+    put = put.replaceAll('"', "&quot;");
+    put = put.replaceAll("&", "&amps;");
+    put = put.replaceAll("�", "<br>");
+    text.innerHTML = `<span style="color:rgb(200, 200, 200)">${storedString}</span><span style="color: white">${put}${indicator}</span>`;
+    text.innerHTML = text.innerHTML.replaceAll("�", "<br>");
+    let splits = text.innerHTML.split("{");
+    let symbols = [];
+    for(let i = 0; i < splits.length; i++){
+        symbols.push(splits[i].substring(0, splits[i].indexOf("}")));
+        text.innerHTML = text.innerHTML.replace(`{${splits[i].substring(0, splits[i].indexOf("}"))}}`, `{}`);
+    };
+    symbols.splice(0, 1);
+    commands.forEach((item) => {
+        text.innerHTML = text.innerHTML.replaceAll(item, `<span style="color:yellow;">${item}</span>`);
+    });
+    operators.forEach((op) => {
+        text.innerHTML = text.innerHTML.replaceAll(op, `<span style="color:green;">${op}</span>`);
+    });
+    splits = text.innerHTML.split("\\");
+    for(let i = 0; i < splits.length; i++){
+        if(i%2 != 0){
+            text.innerHTML = text.innerHTML.replaceAll(`\\${splits[i]}\\`, `<span style="color:skyblue;">\\${splits[i]}\\</span>`);
+        }
+    };
+    symbols.forEach((item) => {
+        text.innerHTML = text.innerHTML.replace("{}", `<span style="color:red">{${item}}</span>`);
+    });
+    this.localStorage.setItem("storage", JSON.stringify(storage));
+}
+
 window.addEventListener("keydown", function(event){
     if(!programBuilder){
         //terminal code
@@ -148,38 +183,7 @@ window.addEventListener("keydown", function(event){
                 break;
         
         }
-        let put = storage.savedPrograms[currentProgram];
-        put = put.replaceAll("'", "&apos;");
-        put = put.replaceAll("<", "&lt;");
-        put = put.replaceAll(">", "&gt;");
-        put = put.replaceAll('"', "&quot;");
-        put = put.replaceAll("&", "&amps;");
-        put = put.replaceAll("�", "<br>");
-        text.innerHTML = `<span style="color:rgb(200, 200, 200)">${storedString}</span><span style="color: white">${put}${indicator}</span>`;
-        text.innerHTML = text.innerHTML.replaceAll("�", "<br>");
-        let splits = text.innerHTML.split("{");
-        let symbols = [];
-        for(let i = 0; i < splits.length; i++){
-            symbols.push(splits[i].substring(0, splits[i].indexOf("}")));
-            text.innerHTML = text.innerHTML.replace(`{${splits[i].substring(0, splits[i].indexOf("}"))}}`, `{}`);
-        };
-        symbols.splice(0, 1);
-        commands.forEach((item) => {
-            text.innerHTML = text.innerHTML.replaceAll(item, `<span style="color:yellow;">${item}</span>`);
-        });
-        operators.forEach((op) => {
-            text.innerHTML = text.innerHTML.replaceAll(op, `<span style="color:green;">${op}</span>`);
-        });
-        splits = text.innerHTML.split("\\");
-        for(let i = 0; i < splits.length; i++){
-            if(i%2 != 0){
-                text.innerHTML = text.innerHTML.replaceAll(`\\${splits[i]}\\`, `<span style="color:skyblue;">\\${splits[i]}\\</span>`);
-            }
-        };
-        symbols.forEach((item) => {
-            text.innerHTML = text.innerHTML.replace("{}", `<span style="color:red">{${item}}</span>`);
-        });
-        this.localStorage.setItem("storage", JSON.stringify(storage));
+        displayProgramCode();
     }
 });
 
@@ -198,6 +202,7 @@ function openEditor(program){
     currentProgram = program;
     programBuilder = true;
     clearTerminal();
+    displayProgramCode();
     // printToTerminal("Welcome to the GCode editor! Start typing or press Escape to return to the terminal", "lime");
     // printToTerminal(`You are currently editing "${program}"`, "lime");
 }

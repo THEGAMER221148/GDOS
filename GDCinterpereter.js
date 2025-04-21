@@ -3,7 +3,7 @@ const terminalText = document.getElementById("terminalText");
 import { printToTerminal, clearTerminal, runProgram, openEditor } from "./terminal.js";
 import { storage } from "./directories.js";
 const ops = ["+", "-", "*", "/", "^", "√", "?", "!", ">", "<"];
-let cmdop = true;
+let cmdop = false;
 
 document.getElementById("fileInput").addEventListener("change", (ev) => {
     const file = ev.target.files[0];
