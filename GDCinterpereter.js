@@ -4,6 +4,7 @@ import { printToTerminal, clearTerminal, runProgram, openEditor } from "./termin
 import { storage } from "./directories.js";
 const ops = ["+", "-", "*", "/", "^", "√", "?", "!", ">", "<"];
 let cmdop = false;
+let passedCode;
 
 document.getElementById("fileInput").addEventListener("change", (ev) => {
     const file = ev.target.files[0];
@@ -125,7 +126,7 @@ function simplifyExpressions(line){
     return line;
 }
 
-function runLine(lineToRun){
+function runLine(lineToRun, idx){
     //get variables
     lineToRun = getVars(lineToRun);
     //simplify math
@@ -287,15 +288,20 @@ function runLine(lineToRun){
                 printToTerminal(`"${statements[1]}" is not installed as a program. Make sure you typed the name correctly, names are case-sensitive.`, "yellow");
             }
             break;
-
+        case "pause":
+            setTimeout(() => {
+                runGDC(passedCode, idx+1);
+            }, statements[1]);
+            return {progress: progressIndex, continue: false}
         default:
             printToTerminal(`"${statements[0]}" is not recognized as a command.`, "yellow");
             break;
     }
-    return progressIndex;
+    return {progress: progressIndex, continue: true};
 }
 
-export default function runGDC(CODE){
+export default function runGDC(CODE, startPos){
+    passedCode = CODE;
     //remove whitespace and line breaks
     let splits = CODE.split("{");
     let symbols = [];
@@ -314,13 +320,15 @@ export default function runGDC(CODE){
     symbols.forEach((item) => {
         CODE = CODE.replace("{}", "{" + item + "}");
     });
-    let index = 0;
+    let index = startPos == undefined? 0 : startPos;
     let temp;
     let temp2;
     let lines = CODE.split(";");
     while(index <= lines.length-2){
         let line = lines[index];
-        index += runLine(line);
+        let result = runLine(line, index);
+        index += result.progress;
+        if(!result.continue){break;}
     }
 }
 
