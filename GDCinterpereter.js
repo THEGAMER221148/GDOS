@@ -29,6 +29,7 @@ function scanUntil(char, line, idx){
 }
 
 function getVars(line){
+    console.log(line);
     line.split("\\").forEach((value) => {
         if(value in mem){
             line = line.replace(`\\${value}\\`, mem[value]);
@@ -146,7 +147,6 @@ function runLine(lineToRun){
                 lineToPrint = lineToPrint.replace(`{${splits[i].substring(0, splits[i].indexOf("}"))}}`, `{}`);
             };
             symbols.splice(0, 1);
-            console.log(lineToPrint);
             lineToPrint = lineToPrint.replaceAll("'", "&apos; ");
             lineToPrint = lineToPrint.replaceAll("<", "&lt; ");
             lineToPrint = lineToPrint.replaceAll(">", "&gt; ");
@@ -161,13 +161,13 @@ function runLine(lineToRun){
 
         case "progress":
             if (statements[2] != "unless" || statements[3] != "⊤") {
-                progressIndex += statements[1];
+                progressIndex += Number(statements[1]) + 1;
             }
             break;
 
         case "regress":
             if (statements[2] != "unless" || statements[3] != "⊤") {
-                progressIndex -= statements[1] + 1;
+                progressIndex -= Number(statements[1]) + 1;
             }
             break;
             
@@ -264,8 +264,6 @@ function runLine(lineToRun){
             if(statements[1] in storage.savedPrograms){
                 // printToTerminal(`Running "${statements[1]}"...`);
                 // runGDC(storage.savedPrograms[statements[1]]);
-                console.log(storage.savedPrograms[statements[1]]);
-                console.log(storage.savedPrograms);
                 runProgram([statements[1]], storage.savedPrograms[statements[1]]);
             }else{
                 printToTerminal(`"${statements[1]}" is not installed as a program. Make sure you typed the name correctly, names are case-sensitive.`, "yellow");
@@ -305,7 +303,6 @@ export default function runGDC(CODE){
         symbols.push(splits[i].substring(0, splits[i].indexOf("}")));
         CODE = CODE.replace(`{${splits[i].substring(0, splits[i].indexOf("}"))}}`, `{}`);
     };
-    console.log(CODE);
     symbols.splice(0, 1);
     CODE = CODE.replaceAll(" ", "");
     CODE = CODE.replaceAll("&apos;", "'");
@@ -317,8 +314,6 @@ export default function runGDC(CODE){
     symbols.forEach((item) => {
         CODE = CODE.replace("{}", "{" + item + "}");
     });
-    console.log(CODE);
-    console.log(symbols);
     let index = 0;
     let temp;
     let temp2;
