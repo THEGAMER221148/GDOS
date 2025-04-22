@@ -292,7 +292,10 @@ function runLine(lineToRun, idx){
             setTimeout(() => {
                 runGDC(passedCode, idx+1);
             }, statements[1]);
-            return {progress: progressIndex, continue: false}
+            return {progress: progressIndex, continue: false};
+        case "stop":
+            return {progress: progressIndex, continue: false};
+            break;
         default:
             printToTerminal(`"${statements[0]}" is not recognized as a command.`, "yellow");
             break;
