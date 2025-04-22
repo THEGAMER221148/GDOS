@@ -1,5 +1,7 @@
 let mem = {};
 const terminalText = document.getElementById("terminalText");
+const canvas = document.getElementById("canvas");
+const ctx = canvas.getContext("2d");
 import { printToTerminal, clearTerminal, runProgram, openEditor } from "./terminal.js";
 import { storage } from "./directories.js";
 const ops = ["+", "-", "*", "/", "^", "√", "?", "!", ">", "<"];
@@ -139,27 +141,6 @@ function runLine(lineToRun, idx){
             window.location = "/GDOS/docs";
             break;
 
-        case "print":
-            let lineToPrint = statements[1];
-            let splits = lineToPrint.split("{");
-            let symbols = [];
-            for(let i = 0; i < splits.length; i++){
-                symbols.push(splits[i].substring(0, splits[i].indexOf("}")));
-                lineToPrint = lineToPrint.replace(`{${splits[i].substring(0, splits[i].indexOf("}"))}}`, `{}`);
-            };
-            symbols.splice(0, 1);
-            lineToPrint = lineToPrint.replaceAll("'", "&apos; ");
-            lineToPrint = lineToPrint.replaceAll("<", "&lt; ");
-            lineToPrint = lineToPrint.replaceAll(">", "&gt; ");
-            lineToPrint = lineToPrint.replaceAll('"', "&quot; ");
-            lineToPrint = lineToPrint.replaceAll("&", "&amps; ");
-            symbols.forEach((item) => {
-                lineToPrint = lineToPrint.replace("{}", item);
-            });
-            console.log(lineToPrint);
-            printToTerminal(lineToPrint, 'white');
-            break;
-
         case "progress":
             if (statements[2] != "unless" || statements[3] != "⊤") {
                 progressIndex += Number(statements[1]) + 1;
@@ -177,6 +158,28 @@ function runLine(lineToRun, idx){
                 case "clear":
                     clearTerminal();
                     break;
+
+                case "print":
+                    let lineToPrint = statements[2];
+                    let splits = lineToPrint.split("{");
+                    let symbols = [];
+                    for(let i = 0; i < splits.length; i++){
+                        symbols.push(splits[i].substring(0, splits[i].indexOf("}")));
+                        lineToPrint = lineToPrint.replace(`{${splits[i].substring(0, splits[i].indexOf("}"))}}`, `{}`);
+                    };
+                    symbols.splice(0, 1);
+                    lineToPrint = lineToPrint.replaceAll("'", "&apos; ");
+                    lineToPrint = lineToPrint.replaceAll("<", "&lt; ");
+                    lineToPrint = lineToPrint.replaceAll(">", "&gt; ");
+                    lineToPrint = lineToPrint.replaceAll('"', "&quot; ");
+                    lineToPrint = lineToPrint.replaceAll("&", "&amps; ");
+                    symbols.forEach((item) => {
+                        lineToPrint = lineToPrint.replace("{}", item);
+                    });
+                    console.log(lineToPrint);
+                    printToTerminal(lineToPrint, 'white');
+                    break;
+
                 default:
                     printToTerminal(`Expected sub-command after "${statements[0]}". Type "help;" for more information.`, "yellow");
                     break;
@@ -288,13 +291,29 @@ function runLine(lineToRun, idx){
                 printToTerminal(`"${statements[1]}" is not installed as a program. Make sure you typed the name correctly, names are case-sensitive.`, "yellow");
             }
             break;
+
         case "pause":
             setTimeout(() => {
                 runGDC(passedCode, idx+1);
             }, statements[1]);
             return {progress: progressIndex, continue: false};
+
         case "stop":
             return {progress: progressIndex, continue: false};
+            break;
+
+        case "canvas":
+            switch (statements[1]) {
+                case "setFillColor":
+                    ctx.fillStyle = `rgb(${statements[2]}, ${statements[3]}, ${statements[4]})`;
+                    break;
+                case "fillRect":
+                    ctx.fillRect(statements[2], statements[3], statements[4], statements[5]);
+                    break;
+            
+                default:
+                    break;
+            }
             break;
         default:
             printToTerminal(`"${statements[0]}" is not recognized as a command.`, "yellow");

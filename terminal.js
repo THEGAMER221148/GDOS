@@ -2,7 +2,7 @@ const text = document.getElementById("terminalText");
 let indicator = "|";
 const forbiddenKeys = ["alt", "shift", "escape", "tab", "delete", "arrowup", "arrowdown", "arrowleft", "arrowright", "control", "capslock", "end", "home", "pagedown", "pageup", "f1", "f2", "f3", "f4", "f5", "f6", "f7", "f8", "f9", "f10", "f11", "f12"];
 const wrappers = ["\\", "⊤", "⊥"];
-const commands = ["help:", "print:", "regress:", "progress:", "unless:", "memory:", "setKey:", "deleteKey:", "terminal:", "clear;", "clearAll;", "listKeys;", "setArray:", "storage:", "run:", "list;", "install;", "open:", "create:", "cloneStoredKey:", "pause:", "stop;"];
+const commands = ["help:", "print:", "regress:", "progress:", "unless:", "memory:", "setKey:", "deleteKey:", "terminal:", "clear;", "clearAll;", "listKeys;", "setArray:", "storage:", "run:", "list;", "install;", "open:", "create:", "cloneStoredKey:", "pause:", "stop;", "canvas:", "setFillColor:", "fillRect:"];
 const operators = ["+", "-", "*", "^", "√"];
 const sussys = ["&amp;", "&lt;", "&quot;", "&apos;", "<br>"];
 let storedString = text.innerHTML;
@@ -118,28 +118,25 @@ window.addEventListener("keydown", function(event){
         switch (event.key.toLowerCase()) {
             case "backspace":
                 storage.savedPrograms[currentProgram] = storage.savedPrograms[currentProgram].substring(0, selectedChar-1) + storage.savedPrograms[currentProgram].substring(selectedChar, storage.savedPrograms[currentProgram].length);
-                selectedChar -= 2;
+                selectedChar -= selectedChar > 0 ? 1 : 0;
                 break;
             
             case "enter":
                 storage.savedPrograms[currentProgram] = storage.savedPrograms[currentProgram].substring(0, selectedChar) + "�" + storage.savedPrograms[currentProgram].substring(selectedChar, storage.savedPrograms[currentProgram].length);
+                selectedChar += selectedChar < storage.savedPrograms[currentProgram].length? 1 : 0;
                 break;
 
             case "arrowdown":
                 storage.savedPrograms[currentProgram] = storage.savedPrograms[currentProgram].substring(0, selectedChar) + "√" + storage.savedPrograms[currentProgram].substring(selectedChar, storage.savedPrograms[currentProgram].length);
                 break;
 
-            case "arrowup":
-                storage.savedPrograms[currentProgram] = prevLine;
-                break;
-
             case "arrowleft":
-                selectedChar -= 2;
+                selectedChar -= selectedChar > 0 ? 1 : 0;
                 console.log(selectedChar);
                 break;
             
             case "arrowright":
-                selectedChar += 0;
+                selectedChar += selectedChar < storage.savedPrograms[currentProgram].length? 1 : 0;
                 break;
 
             case "escape":
@@ -150,11 +147,11 @@ window.addEventListener("keydown", function(event){
             default:
                 if(!forbiddenKeys.includes(event.key.toLowerCase())){
                     storage.savedPrograms[currentProgram] = storage.savedPrograms[currentProgram].substring(0, selectedChar) + event.key + storage.savedPrograms[currentProgram].substring(selectedChar, storage.savedPrograms[currentProgram].length);
+                    selectedChar += selectedChar < storage.savedPrograms[currentProgram].length? 1 : 0;
                 }
                 break;
         
         }
-        selectedChar += selectedChar < storage.savedPrograms[currentProgram].length? 1 : 0;
         let put = storage.savedPrograms[currentProgram];
         put = put.substring(0, selectedChar) + indicator + put.substring(selectedChar, put.length);
         put = put.replaceAll("&", "&amp;");
