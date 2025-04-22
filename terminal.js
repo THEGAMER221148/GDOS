@@ -117,31 +117,29 @@ window.addEventListener("keydown", function(event){
         //prog builder code
         switch (event.key.toLowerCase()) {
             case "backspace":
-                storage.savedPrograms[currentProgram] = storage.savedPrograms[currentProgram].substring(0, storage.savedPrograms[currentProgram].length-1);
+                storage.savedPrograms[currentProgram] = storage.savedPrograms[currentProgram].substring(0, selectedChar-1) + storage.savedPrograms[currentProgram].substring(selectedChar, storage.savedPrograms[currentProgram].length);
+                selectedChar -= 2;
                 break;
             
             case "enter":
-                storage.savedPrograms[currentProgram] += "�";
+                storage.savedPrograms[currentProgram] = storage.savedPrograms[currentProgram].substring(0, selectedChar) + "�" + storage.savedPrograms[currentProgram].substring(selectedChar, storage.savedPrograms[currentProgram].length);
                 break;
 
-            case "ArrowDown":
-                storage.savedPrograms[currentProgram] += "√";
+            case "arrowdown":
+                storage.savedPrograms[currentProgram] = storage.savedPrograms[currentProgram].substring(0, selectedChar) + "√" + storage.savedPrograms[currentProgram].substring(selectedChar, storage.savedPrograms[currentProgram].length);
                 break;
 
-            case "ArrowUp":
+            case "arrowup":
                 storage.savedPrograms[currentProgram] = prevLine;
                 break;
 
-            case "e":
-                if(storage.savedPrograms[currentProgram].substring(storage.savedPrograms[currentProgram].length-3, storage.savedPrograms[currentProgram].length) == "tru"){
-                    storage.savedPrograms[currentProgram] = storage.savedPrograms[currentProgram].substring(0, storage.savedPrograms[currentProgram].length-3);
-                    storage.savedPrograms[currentProgram] += "⊤";
-                }else if(storage.savedPrograms[currentProgram].substring(storage.savedPrograms[currentProgram].length-3, storage.savedPrograms[currentProgram].length) == "fals"){
-                    storage.savedPrograms[currentProgram] = storage.savedPrograms[currentProgram].substring(0, storage.savedPrograms[currentProgram].length-3);
-                    storage.savedPrograms[currentProgram] += "⊥";
-                }else{
-                    storage.savedPrograms[currentProgram] += event.key;
-                }
+            case "arrowleft":
+                selectedChar -= 2;
+                console.log(selectedChar);
+                break;
+            
+            case "arrowright":
+                selectedChar += 0;
                 break;
 
             case "escape":
@@ -151,19 +149,21 @@ window.addEventListener("keydown", function(event){
                 break;
             default:
                 if(!forbiddenKeys.includes(event.key.toLowerCase())){
-                    storage.savedPrograms[currentProgram] += event.key;
+                    storage.savedPrograms[currentProgram] = storage.savedPrograms[currentProgram].substring(0, selectedChar) + event.key + storage.savedPrograms[currentProgram].substring(selectedChar, storage.savedPrograms[currentProgram].length);
                 }
                 break;
         
         }
+        selectedChar += selectedChar < storage.savedPrograms[currentProgram].length? 1 : 0;
         let put = storage.savedPrograms[currentProgram];
-        put = put.replaceAll("&", "&amps;");
+        put = put.substring(0, selectedChar) + indicator + put.substring(selectedChar, put.length);
+        put = put.replaceAll("&", "&amp;");
         put = put.replaceAll("'", "&apos;");
         put = put.replaceAll("<", "&lt;");
         put = put.replaceAll(">", "&gt;");
         put = put.replaceAll('"', "&quot;");
         put = put.replaceAll("�", "<br>");
-        text.innerHTML = `<span style="color: white">${put}${indicator}</span>`;
+        text.innerHTML = `<span style="color: white">${put}</span>`;
         let splits = text.innerHTML.split("{");
         let symbols = [];
         for(let i = 0; i < splits.length; i++){
@@ -204,8 +204,9 @@ function clearTerminal(){
 function openEditor(program){
     currentProgram = program;
     programBuilder = true;
+    selectedChar = storage.savedPrograms[currentProgram].length;
     let put = storage.savedPrograms[currentProgram];
-    put = put.replaceAll("&", "&amps;");
+    put = put.replaceAll("&", "&amp;");
     put = put.replaceAll("'", "&apos;");
     put = put.replaceAll("<", "&lt;");
     put = put.replaceAll(">", "&gt;");
