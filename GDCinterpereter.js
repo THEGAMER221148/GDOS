@@ -2,6 +2,8 @@ let mem = {};
 const terminalText = document.getElementById("terminalText");
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
 import { printToTerminal, clearTerminal, runProgram, openEditor } from "./terminal.js";
 import { storage } from "./directories.js";
 const ops = ["+", "-", "*", "/", "^", "√", "?", "!", ">", "<"];
