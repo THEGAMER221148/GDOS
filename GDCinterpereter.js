@@ -57,7 +57,7 @@ function simplifyExpressions(line){
             tempNum1 = "";
             tempNum2 = "";
             operation = "";
-            while(!isNaN(Number(line[i])) || line[i] == "." || line[i] == "-"){
+            while(!isNaN(Number(line[i])) || line[i] == "."){
                 tempNum1 += line[i];
                 i++;
             }
@@ -65,7 +65,7 @@ function simplifyExpressions(line){
                 operation = line[i];
                 i++;
                 if(!isNaN(Number(line[i]))){
-                    while(!isNaN(Number(line[i])) || line[i] == "." || line[i] == "-"){
+                    while(!isNaN(Number(line[i])) || line[i] == "."){
                         tempNum2 += line[i];
                         i++;
                     }
