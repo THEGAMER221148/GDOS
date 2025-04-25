@@ -52,7 +52,7 @@ function simplifyExpressions(line){
     let i = 0;
     while(i < line.length){
         let originalLocation = i;
-        if(!isNaN(line[i]) || line[i] == "-"){
+        if(!isNaN(line[i])){
             originalLocation = i;
             tempNum1 = "";
             tempNum2 = "";
