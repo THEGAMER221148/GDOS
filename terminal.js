@@ -127,7 +127,8 @@ window.addEventListener("keydown", function(event){
                 break;
 
             case "arrowdown":
-                storage.savedPrograms[currentProgram] = storage.savedPrograms[currentProgram].substring(0, selectedChar) + "√" + storage.savedPrograms[currentProgram].substring(selectedChar, storage.savedPrograms[currentProgram].length);
+                //storage.savedPrograms[currentProgram] = storage.savedPrograms[currentProgram].substring(0, selectedChar) + "√" + storage.savedPrograms[currentProgram].substring(selectedChar, storage.savedPrograms[currentProgram].length);
+                selectedChar = storage.savedPrograms[currentProgram].substring(selectedChar+1, storage.savedPrograms[currentProgram].length).indexOf("�")+selectedChar+1;
                 break;
 
             case "arrowleft":
@@ -137,6 +138,10 @@ window.addEventListener("keydown", function(event){
             
             case "arrowright":
                 selectedChar += selectedChar < storage.savedPrograms[currentProgram].length? 1 : 0;
+                break;
+
+            case "arrowup":
+                selectedChar = storage.savedPrograms[currentProgram].substring(0, selectedChar-1).lastIndexOf("�");
                 break;
 
             case "escape":
