@@ -2,6 +2,8 @@ let mem = {};
 const terminalText = document.getElementById("terminalText");
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
 import { printToTerminal, clearTerminal, runProgram, openEditor } from "./terminal.js";
 import { storage } from "./directories.js";
 const ops = ["+", "-", "*", "/", "^", "√", "?", "!", ">", "<"];
@@ -52,12 +54,12 @@ function simplifyExpressions(line){
     let i = 0;
     while(i < line.length){
         let originalLocation = i;
-        if(!isNaN(line[i]) || line[i] == "-"){
+        if(!isNaN(line[i])){
             originalLocation = i;
             tempNum1 = "";
             tempNum2 = "";
             operation = "";
-            while(!isNaN(Number(line[i])) || line[i] == "." || line[i] == "-"){
+            while(!isNaN(Number(line[i])) || line[i] == "."){
                 tempNum1 += line[i];
                 i++;
             }
@@ -65,7 +67,7 @@ function simplifyExpressions(line){
                 operation = line[i];
                 i++;
                 if(!isNaN(Number(line[i]))){
-                    while(!isNaN(Number(line[i])) || line[i] == "." || line[i] == "-"){
+                    while(!isNaN(Number(line[i])) || line[i] == "."){
                         tempNum2 += line[i];
                         i++;
                     }
