@@ -7,6 +7,8 @@ import { storage } from "./directories.js";
 const ops = ["+", "-", "*", "/", "^", "√", "?", "!", ">", "<"];
 let cmdop = false;
 let passedCode;
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
 
 document.getElementById("fileInput").addEventListener("change", (ev) => {
     const file = ev.target.files[0];
