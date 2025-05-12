@@ -53,6 +53,8 @@ function simplifyExpressions(line){
     let operation = "";
     let i = 0;
     while(i < line.length){
+        line = line.replaceAll("+-", "-");
+        line = line.replaceAll("--", "+");
         let originalLocation = i;
         if(!isNaN(line[i])){
             originalLocation = i;
@@ -113,6 +115,9 @@ function simplifyExpressions(line){
             }else{
                 i++;
             }
+        }else if(ops.includes(line[i]) && line[i] == "+"){
+            line[i] = " ";
+            i++;
         }else{
             i++;
         }
