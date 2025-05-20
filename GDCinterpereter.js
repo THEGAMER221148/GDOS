@@ -116,7 +116,7 @@ function simplifyExpressions(line){
                 i++;
             }
         }else if(ops.includes(line[i]) && line[i] == "+"){
-            line[i] = " ";
+            line = line.splice(i, 1);
             i++;
         }else{
             i++;
