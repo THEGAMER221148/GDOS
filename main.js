@@ -1,10 +1,25 @@
 // get necessary elements
 const terminal = document.getElementById("terminal");
 const inputElement = document.getElementById("input");
+const commands = {
+    help: (args) => {
+        terminal.innerHTML += "Available Commands:\n";
+        for (const command in commands) {
+            terminal.innerHTML += `- ${command}\n`;
+        }
+    },
+    clear: (args) => {
+        terminal.innerHTML = "";
+    },
+    print: (args) => {
+        terminal.innerHTML += args + "<br>";
+    }
+}
 const variables = {};
 let inputLine = "";
 
 function processCode(code) {
+    // Step 1: Prepare Code
     // separate strings (split the code by " and take the odd indexed elements)
     let strings = code.split('"').filter((_, i) => i % 2 === 1);
     // remove strings from code and replace them with placeholders
@@ -13,8 +28,16 @@ function processCode(code) {
     }
     // separate lines
     const lines = code.split(";").map(line => line.trim()).filter(line => line.length > 0);
-    
-    terminal.innerHTML += `${code}<br>`;
+
+    // Step 2: Execute Code
+    for (const line of lines) {
+        const splits = line.split(":").map(part => part.trim());
+        try {
+            commands[splits[0]](splits.slice(1).join(":").replace(/__STRING(\d+)__/g, (_, i) => strings[i]));
+        } catch {
+            terminal.innerHTML += `<span style="color: red;">Error: Command "${splits[0]}" not found</span><br>`;
+        }
+    }
 }
 
 // event listeners for input
