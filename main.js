@@ -2,12 +2,16 @@
 const terminal = document.getElementById("terminal");
 const inputElement = document.getElementById("input");
 const variables = {};
+let storage = {};
+if (localStorage.getItem("GDOSStorage")) {
+    storage = JSON.parse(localStorage.getItem("GDOSStorage"));
+} else {
+    terminal.innerHTML += `<span style="color: rgb(255, 255, 0);">Warning: No existing storage found, starting with empty storage</span><br>`;
+}
 const defaultConfig = {
     showAdditionalOutput: false,
     warnDangerousPrograms: true,
     saveConfigOptions: true,
-    saveCommandHistory: true,
-    maxCommandHistory: 100
 };
 // load user config from localStorage if it exists, otherwise use default config
 let config = { ...defaultConfig };
@@ -32,6 +36,7 @@ const commands = {
     },
     clear: (args) => {
         terminal.innerHTML = "";
+        if (config.showAdditionalOutput) terminal.innerHTML += `<span style="color: rgb(0, 255, 0);">Terminal Cleared!</span><br>`;
     },
     print: (args) => {
         terminal.innerHTML += args + "<br>";
@@ -82,8 +87,46 @@ const commands = {
                 terminal.innerHTML += `<span style="color: red;">Error: Invalid config command "${args[0]}"</span><br>`;
                 break;
         }
-        if (config.saveConfigOptions) localStorage.setItem("GDOSConfig", JSON.stringify(config));
-    }
+        /*if (config.saveConfigOptions)*/ localStorage.setItem("GDOSConfig", JSON.stringify(config));
+    },
+    listStorage: (args) => {
+        let storageList = "<span style='color: rgb(0, 255, 0);'>Storage Contents:\n";
+        for (const key in storage) {
+            storageList += `- ${key}: ${storage[key]}\n`;
+        }
+        storageList += "</span><br>";
+        terminal.innerHTML += storageList;
+    },
+    save: (args) => {
+        storage[args[0]] = args.slice(1).join(" ");
+        // make sure user isnt saving too much data to storage
+        let json;
+        try {
+            json = JSON.stringify(storage);
+        } catch (e) {
+            terminal.innerHTML += `<span style="color:red;">Error: Storage contains circular references</span><br>`;
+            return;
+        }
+
+        const storageSize = new Blob([json]).size;
+
+        if (storageSize > 4.8 * 1024 * 1024) {
+            terminal.innerHTML += `<span style="color:red;">Error: Storage limit exceeded (4.8MB)</span><br>`;
+            return;
+        }
+        if (config.showAdditionalOutput) terminal.innerHTML += `<span style="color: rgb(0, 255, 0);">Saved "${args.slice(1).join(" ")}" to storage with key "${args[0]}" (${(storageSize / 1024 / 1024).toFixed(2)}/4.8 MB used)</span><br>`;
+        localStorage.setItem("GDOSStorage", JSON.stringify(storage));
+    },
+    delete: (args) => {
+        if (storage[args[0]] === undefined) {
+            terminal.innerHTML += `<span style="color: red;">Error: Storage key "${args[0]}" not found</span><br>`;
+        } else {
+            delete storage[args[0]];
+            localStorage.setItem("GDOSStorage", JSON.stringify(storage));
+            if (config.showAdditionalOutput) terminal.innerHTML += `<span style="color: rgb(0, 255, 0);">Deleted storage key "${args[0]}"</span><br>`;
+        }
+    },
+
 }
 let inputLine = "";
 
