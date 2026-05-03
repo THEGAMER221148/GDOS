@@ -43,10 +43,18 @@
         <h3>Terminal</h3>
         <p>Everything you do in GDOS is done through the terminal. It is the primary interface for interacting with the system. In the terminal, you can run GCODE, which allows you to store or remove data from your <strong>permanent storage</strong>, create and run <strong>programs</strong>, and execute almost any other GCODE commands.</p>
         <h3>Permanent Storage</h3>
-        <p>Your Permanent Storage is a place where you can store data and retrieve it between sessions. It works as a simple key-value system, where each key corresponds to a value that you can define. Use the <code>save</code> command to store data, with the first argyment being the key and the second argument being the value. Whevever you want to retrieve data, type the key name for the data you want with a <code>.</code> character beforer it</p>
-        <p><strong>Examples:</strong><br>
+        <p>Your Permanent Storage is a place where you can store data and retrieve it between sessions. It works as a simple key-value system, where each key corresponds to a value that you can define. Use the <code>save</code> command to store data, with the first argument being the key and the second argument being the value. Whevever you want to retrieve data, type the key name for the data you want with a <code>.</code> character before it</p>
+        <p><strong>Example:</strong><br>
         <code>save: name: "John Doe";</code><br>
         <code>print: .name;</code></p>
+        <p>If this code doesn't make sense yet, don't worry - it will become clearer as you learn about GCODE's syntax.</p>
+        <h2>GCODE</h2>
+        <p>GCODE, formally Gedagadegadagedacode, is the programming language used for programming and navigation in GDOS. It is a relatively simple language that is focused on line-by-line command execution instead of object-oriented programming.</p>
+        <h3>Syntax</h3>
+        <p>In GCODE, each line represents a single command. Commands start with their name followed by a colon and arguments also separated by colons. Here's an example:</p>
+        <code>print: "Hello, World!";</code>
+        <p>In this example, <code>print</code> is the command name, and <code>"Hello, World!"</code> is the argument. The semicolon at the end of the line indicates the end of the command. Semicolons are extremely important in GCODE as they indicate the end of a line. Without them, only the first command in a program will execute, as every other command will be treated as an extraneous argument.</p>
+        
 
     </body>
 </html>

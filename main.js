@@ -12,6 +12,7 @@ const defaultConfig = {
     showAdditionalOutput: false,
     warnDangerousPrograms: true,
     saveConfigOptions: true,
+    highlightSyntax: true,
 };
 // load user config from localStorage if it exists, otherwise use default config
 let config = { ...defaultConfig };
@@ -223,6 +224,32 @@ function processCode(code) {
     }
 }
 
+function highlightSyntax(code) {
+    // Prepare Code //
+    // separate strings (split the code by " and take the odd indexed elements)
+    let strings = code.split('"').filter((_, i) => i % 2 === 1);
+    // highlight strings in code
+    for (const i in strings) {
+        code = code.replace(`${strings[i]}`, `<span style="color: rgb(100, 200, 100);">${strings[i]}</span>`);
+    }
+    // highlight variables in line
+    for (const variable in variables) {
+        code = code.replace(new RegExp(`\\b${variable}\\b`, "g"), `<span style="color: rgb(100, 100, 200);">${variables[variable]}</span>`);
+    }
+    // highlight numbers in line
+    code = code.replace(/(\d+)\s*/g, (_, num) => {
+        return `<span style="color: rgb(200, 100, 100);">${num}</span>`;
+    });
+    // simplify boolean expressions in line
+    code = code.replace(/(true|false)\s*/g, (_, exp) => {
+        return `<span style="color: rgb(200, 150, 100);">${exp}</span>`;
+    });
+
+    // split line into command and arguments
+    const splits = code.split(":");
+    return code;
+}
+
 // event listeners for input
 document.addEventListener("keydown", (event) => {
     // normal key presses
@@ -244,5 +271,5 @@ document.addEventListener("keydown", (event) => {
         default:
             break;
     }
-    inputElement.innerText = `> ${inputLine}`;
+    inputElement.innerHTML = `> ${highlightSyntax(inputLine)}`;
 });
