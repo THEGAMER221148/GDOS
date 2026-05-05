@@ -2,6 +2,8 @@
 const terminal = document.getElementById("terminal");
 const inputElement = document.getElementById("input");
 const variables = {};
+const history = [];
+let historyIndex = 1;
 let currentChar = 0;
 let storage = {};
 if (localStorage.getItem("GDOSStorage")) {
@@ -135,12 +137,17 @@ const commands = {
             window.jumpToLine = parseInt(args[0]);
             console.log(`Jumping to line ${args[0]}`);
         }
+    },
+
+    wait: (args) => { // in miliseconds
+        window.waitTime = parseInt(args[0]);
     }
 
 }
 let inputLine = "";
 
-function processCode(code) {
+function processCode(code, startingLine) {
+    const originalCode = code;
     // Prepare Code //
     // separate strings (split the code by " and take the odd indexed elements)
     let strings = code.split('"').filter((_, i) => i % 2 === 1);
@@ -152,7 +159,7 @@ function processCode(code) {
     const lines = code.split(";").map(line => line.trim()).filter(line => line.length > 0);
 
     // Execute Code //
-    for (let i = 0, len = lines.length; i < len; i++) {
+    for (let i = startingLine, len = lines.length; i < len; i++) {
         let line = lines[i];
         // replace variables in line
         for (const variable in variables) {
@@ -236,6 +243,14 @@ function processCode(code) {
             i = window.jumpToLine - 2;
             window.jumpToLine = undefined;
         }
+
+        if (window.waitTime !== undefined) {
+            setTimeout(() => {
+                processCode(originalCode, i + 1);
+            }, window.waitTime);
+            window.waitTime = undefined;
+            return;
+        }
     }
 }
 
@@ -301,7 +316,9 @@ document.addEventListener("keydown", (event) => {
             currentChar = 0;
             break;
         case "enter":
-            processCode(inputLine);
+            processCode(inputLine, 0);
+            history.push(inputLine);
+            historyIndex = 0;
             inputLine = "";
             currentChar = 0;
             break;
@@ -319,6 +336,20 @@ document.addEventListener("keydown", (event) => {
             break;
         case "arrowright":
             if (currentChar < inputLine.length) currentChar += 1;
+            break;
+        case "arrowup":
+            historyIndex = Math.min(historyIndex + 1, history.length);
+            if (history.length > 0) {
+                inputLine = history[history.length - historyIndex];
+                currentChar = inputLine.length;
+            }
+            break;
+        case "arrowdown":
+            historyIndex = Math.max(historyIndex - 1, 1);
+            if (history.length > 0) {
+                inputLine = history[history.length - historyIndex];
+                currentChar = inputLine.length;
+            }
             break;
         default:
             break;
