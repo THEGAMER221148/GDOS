@@ -271,5 +271,5 @@ document.addEventListener("keydown", (event) => {
         default:
             break;
     }
-    inputElement.innerHTML = `> ${highlightSyntax(inputLine)}`;
+    inputElement.innerText = `> ${inputLine}`;
 });
