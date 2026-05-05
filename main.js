@@ -2,6 +2,7 @@
 const terminal = document.getElementById("terminal");
 const inputElement = document.getElementById("input");
 const variables = {};
+let currentChar = 0;
 let storage = {};
 if (localStorage.getItem("GDOSStorage")) {
     storage = JSON.parse(localStorage.getItem("GDOSStorage"));
@@ -127,6 +128,14 @@ const commands = {
             if (config.showAdditionalOutput) terminal.innerHTML += `<span style="color: rgb(0, 255, 0);">Deleted storage key "${args[0]}"</span><br>`;
         }
     },
+    // goto:<line>:<condition>
+    goto: (args) => {
+        console.log(args);
+        if (args[1] === "true") {
+            window.jumpToLine = parseInt(args[0]);
+            console.log(`Jumping to line ${args[0]}`);
+        }
+    }
 
 }
 let inputLine = "";
@@ -143,10 +152,11 @@ function processCode(code) {
     const lines = code.split(";").map(line => line.trim()).filter(line => line.length > 0);
 
     // Execute Code //
-    for (let line of lines) {
+    for (let i = 0, len = lines.length; i < len; i++) {
+        let line = lines[i];
         // replace variables in line
         for (const variable in variables) {
-            line = line.replace(variable, variables[variable]);
+            line = line.replace(`.${variable}`, variables[variable]);
         }
         // simplify math expressions in line
         line = line.replace(/(\d+)\s*([\+\-\*\/\^\%])\s*(\d+)/g, (_, a, operator, b) => {
@@ -221,6 +231,11 @@ function processCode(code) {
                     break;
             }
         }
+        // check if goto was called
+        if (window.jumpToLine !== undefined) {
+            i = window.jumpToLine - 2;
+            window.jumpToLine = undefined;
+        }
     }
 }
 
@@ -250,7 +265,7 @@ function highlightSyntax(code) {
     });
     // highlight variables in line
     for (const variable in variables) {
-        code = code.replace(variable, `<span style="color: rgb(100, 100, 200);">${variable}</span>`);
+        code = code.replace("." + variable, `<span style="color: rgb(100, 100, 200);">.${variable}</span>`);
     }
 
     // split line into command and arguments
@@ -271,23 +286,42 @@ function highlightSyntax(code) {
 // event listeners for input
 document.addEventListener("keydown", (event) => {
     // normal key presses
-    if (event.key.length === 1) {
-        inputLine += event.key;
+    if (event.key.length === 1 && !event.ctrlKey && !event.metaKey) {
+        inputLine = inputLine.slice(0, currentChar) + event.key + inputLine.slice(currentChar);
+        currentChar += 1;
     }
-    // backspace
+    // sussy keys
     switch (event.key.toLowerCase()) {
         case "backspace":
-            inputLine = inputLine.slice(0, -1);
+            inputLine = inputLine.slice(0, currentChar - 1) + inputLine.slice(currentChar);
+            currentChar -= 1;
             break;
         case "delete":
             inputLine = "";
+            currentChar = 0;
             break;
         case "enter":
             processCode(inputLine);
             inputLine = "";
+            currentChar = 0;
+            break;
+        case "v":
+            if (event.ctrlKey || event.metaKey) {
+                navigator.clipboard.readText().then((text) => {
+                    inputLine += text;
+                    inputElement.innerHTML = `> ${highlightSyntax(inputLine.slice(0, currentChar))}<span style="color: rgb(255, 255, 255);">_</span>${highlightSyntax(inputLine.slice(currentChar))}`;
+                    currentChar += text.length;
+                });
+            }
+            break;
+        case "arrowleft":
+            if (currentChar > 0) currentChar -= 1;
+            break;
+        case "arrowright":
+            if (currentChar < inputLine.length) currentChar += 1;
             break;
         default:
             break;
     }
-    inputElement.innerHTML = `> ${highlightSyntax(inputLine)}`;
+    inputElement.innerHTML = `> ${highlightSyntax(inputLine.slice(0, currentChar))}<span style="color: rgb(255, 255, 255);">_</span>${highlightSyntax(inputLine.slice(currentChar))}`;
 });
