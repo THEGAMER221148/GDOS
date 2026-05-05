@@ -146,7 +146,7 @@ function processCode(code) {
     for (let line of lines) {
         // replace variables in line
         for (const variable in variables) {
-            line = line.replace(new RegExp(`\\b${variable}\\b`, "g"), variables[variable]);
+            line = line.replace(variable, variables[variable]);
         }
         // simplify math expressions in line
         line = line.replace(/(\d+)\s*([\+\-\*\/\^\%])\s*(\d+)/g, (_, a, operator, b) => {
@@ -227,14 +227,18 @@ function processCode(code) {
 function highlightSyntax(code) {
     // Prepare Code //
     // separate strings (split the code by " and take the odd indexed elements)
-    let strings = code.split('"').filter((_, i) => i % 2 === 1);
-    // highlight strings in code
-    for (const i in strings) {
-        code = code.replace(`${strings[i]}`, `<span style="color: rgb(100, 200, 100);">${strings[i]}</span>`);
-    }
-    // highlight variables in line
-    for (const variable in variables) {
-        code = code.replace(new RegExp(`\\b${variable}\\b`, "g"), `<span style="color: rgb(100, 100, 200);">${variables[variable]}</span>`);
+    const originalCode = code;
+    let strings = originalCode.split('"').filter((_, i) => i % 2 === 1);
+    
+    // Convert index to letter (0->A, 1->B, etc) so placeholders have no digits
+    const indexToLetter = (n) => String.fromCharCode(65 + (parseInt(n) % 26));
+    
+    // extract strings in code
+    if (code.split('"').length - 1 >= 2) {
+        for (const i in strings) {
+            const letter = indexToLetter(i);
+            code = code.replace(`"${strings[i]}"`, `__PLACEHOLDER_${letter}__`);
+        }
     }
     // highlight numbers in line
     code = code.replace(/(\d+)\s*/g, (_, num) => {
@@ -244,9 +248,23 @@ function highlightSyntax(code) {
     code = code.replace(/(true|false)\s*/g, (_, exp) => {
         return `<span style="color: rgb(200, 150, 100);">${exp}</span>`;
     });
+    // highlight variables in line
+    for (const variable in variables) {
+        code = code.replace(variable, `<span style="color: rgb(100, 100, 200);">${variable}</span>`);
+    }
 
     // split line into command and arguments
     const splits = code.split(":");
+    // highlight commands
+    code = code.replace(`${splits[0]}:`, `<span style="color: rgb(255, 255, 50);">${splits[0]}:</span>`);
+
+    // add strings back and highlight them
+    if (strings.length > 0) {
+        for (const i in strings) {
+            const letter = indexToLetter(i);
+            code = code.replace(`__PLACEHOLDER_${letter}__`, `<span style='color: rgb(100, 200, 100);'>"${strings[i]}"</span>`);
+        }
+    }
     return code;
 }
 
@@ -271,5 +289,5 @@ document.addEventListener("keydown", (event) => {
         default:
             break;
     }
-    inputElement.innerText = `> ${inputLine}`;
+    inputElement.innerHTML = `> ${highlightSyntax(inputLine)}`;
 });
