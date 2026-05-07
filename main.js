@@ -3,6 +3,7 @@ const terminal = document.getElementById("terminal");
 const inputElement = document.getElementById("input");
 const variables = {};
 const history = [];
+let inTerminal = true;
 let historyIndex = 1;
 let currentChar = 0;
 let storage = {};
@@ -121,6 +122,19 @@ const commands = {
         if (config.showAdditionalOutput) terminal.innerHTML += `<span style="color: rgb(0, 255, 0);">Saved "${args.slice(1).join(" ")}" to storage with key "${args[0]}" (${(storageSize / 1024 / 1024).toFixed(2)}/4.8 MB used)</span><br>`;
         localStorage.setItem("GDOSStorage", JSON.stringify(storage));
     },
+    edit: (args) => { // edit:<key>; opens editor for storage key
+        if (storage[args[0]] === undefined) {
+            terminal.innerHTML += `<span style="color: red;">Error: Storage key "${args[0]}" not found</span><br>`;
+        } else {
+            // turn off terminal editing
+            inTerminal = false;
+            // get the data
+            const data = storage[args[0]];
+            // Turn the terminal into a text editor
+            terminal.style.top = "0%";
+            terminal.style.height = "100%";
+        }
+    },
     delete: (args) => {
         if (storage[args[0]] === undefined) {
             terminal.innerHTML += `<span style="color: red;">Error: Storage key "${args[0]}" not found</span><br>`;
@@ -166,7 +180,7 @@ function processCode(code, startingLine) {
             line = line.replace(`.${variable}`, variables[variable]);
         }
         // simplify math expressions in line
-        line = line.replace(/(\d+)\s*([\+\-\*\/\^\%])\s*(\d+)/g, (_, a, operator, b) => {
+        line = line.replace(/(-?\d+(?:\.\d+)?)\s*([\+\-\*\/\^\%])\s*(-?\d+(?:\.\d+)?)/g, (_, a, operator, b) => {
             a = parseFloat(a);
             b = parseFloat(b);
             switch (operator) {
@@ -272,27 +286,27 @@ function highlightSyntax(code) {
     }
     // highlight numbers in line
     code = code.replace(/(\d+)\s*/g, (_, num) => {
-        return `<span style="color: rgb(200, 100, 100);">${num}</span>`;
+        return `<span style="color: rgb(255, 0, 0);">${num}</span>`;
     });
     // simplify boolean expressions in line
     code = code.replace(/(true|false)\s*/g, (_, exp) => {
-        return `<span style="color: rgb(200, 150, 100);">${exp}</span>`;
+        return `<span style="color: rgb(255, 128, 0);">${exp}</span>`;
     });
     // highlight variables in line
     for (const variable in variables) {
-        code = code.replace("." + variable, `<span style="color: rgb(100, 100, 200);">.${variable}</span>`);
+        code = code.replace("." + variable, `<span style="color: rgb(0, 128, 255);">.${variable}</span>`);
     }
 
     // split line into command and arguments
     const splits = code.split(":");
     // highlight commands
-    code = code.replace(`${splits[0]}:`, `<span style="color: rgb(255, 255, 50);">${splits[0]}:</span>`);
+    code = code.replace(`${splits[0]}:`, `<span style="color: rgb(255, 255, 0);">${splits[0]}:</span>`);
 
     // add strings back and highlight them
     if (strings.length > 0) {
         for (const i in strings) {
             const letter = indexToLetter(i);
-            code = code.replace(`__PLACEHOLDER_${letter}__`, `<span style='color: rgb(100, 200, 100);'>"${strings[i]}"</span>`);
+            code = code.replace(`__PLACEHOLDER_${letter}__`, `<span style='color: rgb(0, 255, 0);'>"${strings[i]}"</span>`);
         }
     }
     return code;
@@ -300,6 +314,7 @@ function highlightSyntax(code) {
 
 // event listeners for input
 document.addEventListener("keydown", (event) => {
+    if (!inTerminal) return;
     // normal key presses
     if (event.key.length === 1 && !event.ctrlKey && !event.metaKey) {
         inputLine = inputLine.slice(0, currentChar) + event.key + inputLine.slice(currentChar);
@@ -309,7 +324,8 @@ document.addEventListener("keydown", (event) => {
     switch (event.key.toLowerCase()) {
         case "backspace":
             inputLine = inputLine.slice(0, currentChar - 1) + inputLine.slice(currentChar);
-            currentChar -= 1;
+            currentChar = Math.max(0, currentChar - 1);
+            console.log(inputLine, currentChar);
             break;
         case "delete":
             inputLine = "";
@@ -326,7 +342,7 @@ document.addEventListener("keydown", (event) => {
             if (event.ctrlKey || event.metaKey) {
                 navigator.clipboard.readText().then((text) => {
                     inputLine += text;
-                    inputElement.innerHTML = `> ${highlightSyntax(inputLine.slice(0, currentChar))}<span style="color: rgb(255, 255, 255);">_</span>${highlightSyntax(inputLine.slice(currentChar))}`;
+                    inputElement.innerHTML = `> ${highlightSyntax(inputLine.slice(0, currentChar))}<span style="color: rgb(255, 255, 255);">_</span>${highlightSyntax(inputLine.slice(currentChar))}`.replace(/ /g, "&nbsp;");
                     currentChar += text.length;
                 });
             }
@@ -354,5 +370,5 @@ document.addEventListener("keydown", (event) => {
         default:
             break;
     }
-    inputElement.innerHTML = `> ${highlightSyntax(inputLine.slice(0, currentChar))}<span style="color: rgb(255, 255, 255);">_</span>${highlightSyntax(inputLine.slice(currentChar))}`;
+    inputElement.innerHTML = `> ${highlightSyntax(inputLine.slice(0, currentChar))}<span style="color: rgb(255, 255, 255);">|</span>${highlightSyntax(inputLine.slice(currentChar))}`;
 });
