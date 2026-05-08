@@ -10,13 +10,13 @@
                 font-family: monospace;
                 background-color: rgb(0, 0, 0);
                 position: fixed;
+                font-size: 20px;
+                line-height: 20px;
             }
             #terminal{
                 position: fixed;
                 width: 100%;
                 color: rgb(200, 200, 200);
-                font-size: 20px;
-                line-height: 20px;
                 margin: 0%;
                 white-space: pre-wrap;
                 bottom: 20px;
@@ -25,30 +25,41 @@
                 position: fixed;
                 width: 100%;
                 color: white;
-                font-size: 20px;
-                line-height: 20px;
                 margin: 0%;
                 white-space: pre;
                 bottom: 0px;
             }
-            ul {
-                line-height: 10px;
-                margin-top: 0%;
-                margin-bottom: 0%;
-            }
-            canvas {
+            #editor {
                 position: fixed;
-                left: 0%;
-                right: 0%;
-                z-index: 999;
+                width: 100%;
+                color: rgb(200, 200, 200);
+                font-size: 20px;
+                line-height: 20px;
+                margin: 0%;
+                white-space: pre-wrap;
+                top: 20px;
+                left: 0px;
+                background-color: rgb(0, 0, 0);
+                height: 100%;
+                z-index: 998;
+                border: none;
             }
+            #editorWindow {
+                visibility: hidden;
+            }
+            textarea:focus {
+                outline: none;
+            }
+
         </style>
     </head>
     <body>
-        <input type="file" id="fileInput" accept=".GC, .txt" style="visibility: hidden;">
-        <canvas id="canvas">render</canvas>
         <div id="terminal">Welcome to GedagadegadOS! If you don't know what to do, type "help"<br></div>
         <div id="input">></div>
+        <div id="editorWindow">
+            <span style="color: rgb(0, 255, 0)" id="info">Blank editor (nothing you type here will be saved!)</span>
+            <textarea id="editor">Editor</textarea>
+        </div>
         <script src="./main.js" type="module"></script>
     </body>
 </html>

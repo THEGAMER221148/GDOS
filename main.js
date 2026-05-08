@@ -43,10 +43,11 @@ const commands = {
         terminal.innerHTML = "";
         if (config.showAdditionalOutput) terminal.innerHTML += `<span style="color: rgb(0, 255, 0);">Terminal Cleared!</span><br>`;
     },
-    print: (args) => {
-        terminal.innerHTML += args + "<br>";
+    print: (args) => { //print:<message>:<includenewline?>;
+        terminal.innerHTML += args[0];
+        if (args[1]==="true") terminal.innerHTML += args[1];
     },
-    def: (args) => {
+    def: (args) => { // def:<name>:<value>;
         variables[args[0]] = args[1];
         if (config.showAdditionalOutput) terminal.innerHTML += `<span style="color: rgb(0, 255, 0);">Variable "${args[0]}" defined with value "${args[1]}"</span><br>`;
     },
@@ -97,7 +98,7 @@ const commands = {
     listStorage: (args) => {
         let storageList = "<span style='color: rgb(0, 255, 0);'>Storage Contents:\n";
         for (const key in storage) {
-            storageList += `- ${key}: ${storage[key]}\n`;
+            storageList += `- ${key}\n`;
         }
         storageList += "</span><br>";
         terminal.innerHTML += storageList;
@@ -125,15 +126,38 @@ const commands = {
     edit: (args) => { // edit:<key>; opens editor for storage key
         if (storage[args[0]] === undefined) {
             terminal.innerHTML += `<span style="color: red;">Error: Storage key "${args[0]}" not found</span><br>`;
-        } else {
-            // turn off terminal editing
-            inTerminal = false;
-            // get the data
-            const data = storage[args[0]];
-            // Turn the terminal into a text editor
-            terminal.style.top = "0%";
-            terminal.style.height = "100%";
+            return;
         }
+        // turn off terminal editing
+        inTerminal = false;
+        // get the data
+        const data = storage[args[0]];
+        // unhide text editor
+        document.getElementById("editorWindow").style.visibility = "visible";
+        document.getElementById("info").innerText = `Editing storage item "${args[0]}" (press [esc] to save and exit).`;
+        const editor = document.getElementById("editor");
+        editor.textContent = data;
+        editor.focus();
+        editor.addEventListener("keydown", function waitForExit(event) {
+            if (event.key === `Escape`) {
+                event.preventDefault();
+                storage[args[0]] = document.getElementById("editor").value;
+                localStorage.setItem("GDOSStorage", JSON.stringify(storage))
+                document.getElementById("editorWindow").style.visibility = "hidden";
+                inTerminal = true;
+                terminal.innerHTML += `<span style="color: rgb(0, 255, 0);">Saved changes to storage item "${args[0]}"</span><br>`;
+                editor.removeEventListener("keydown", waitForExit);
+            }
+        });
+
+        
+    },
+    execute: (args) => { //execute:<key>; tries to run code at storage key <key>.
+        if (storage[args[0]] === undefined) {
+            terminal.innerHTML += `<span style="color: red;">Error: Storage key "${args[0]}" not found</span><br>`;
+            return;
+        }
+        processCode(storage[args[0]], 0);
     },
     delete: (args) => {
         if (storage[args[0]] === undefined) {
@@ -146,11 +170,7 @@ const commands = {
     },
     // goto:<line>:<condition>
     goto: (args) => {
-        console.log(args);
-        if (args[1] === "true") {
-            window.jumpToLine = parseInt(args[0]);
-            console.log(`Jumping to line ${args[0]}`);
-        }
+        if (args[1] === "true") window.jumpToLine = parseInt(args[0]);
     },
 
     wait: (args) => { // in miliseconds
@@ -325,7 +345,6 @@ document.addEventListener("keydown", (event) => {
         case "backspace":
             inputLine = inputLine.slice(0, currentChar - 1) + inputLine.slice(currentChar);
             currentChar = Math.max(0, currentChar - 1);
-            console.log(inputLine, currentChar);
             break;
         case "delete":
             inputLine = "";
