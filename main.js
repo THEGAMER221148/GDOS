@@ -1,4 +1,5 @@
 // get necessary elements
+window.terminateProgram = false;
 const terminal = document.getElementById("terminal");
 const inputElement = document.getElementById("input");
 const variables = {};
@@ -43,9 +44,9 @@ const commands = {
         terminal.innerHTML = "";
         if (config.showAdditionalOutput) terminal.innerHTML += `<span style="color: rgb(0, 255, 0);">Terminal Cleared!</span><br>`;
     },
-    print: (args) => { //print:<message>:<includenewline?>;
+    print: (args) => { //print:<message>:<prevent newline?>;
         terminal.innerHTML += args[0];
-        if (args[1]==="true") terminal.innerHTML += "<br>";
+        if (args[1] !== "true") terminal.innerHTML += "<br>";
     },
     def: (args) => { // def:<name>:<value>;
         variables[args[0]] = args[1];
@@ -138,12 +139,14 @@ const commands = {
         const editor = document.getElementById("editor");
         editor.textContent = data;
         editor.focus();
+        // listen for escape press
         editor.addEventListener("keydown", function waitForExit(event) {
             if (event.key === `Escape`) {
                 event.preventDefault();
                 storage[args[0]] = document.getElementById("editor").value;
                 localStorage.setItem("GDOSStorage", JSON.stringify(storage))
                 document.getElementById("editorWindow").style.visibility = "hidden";
+                editor.blur();
                 inTerminal = true;
                 terminal.innerHTML += `<span style="color: rgb(0, 255, 0);">Saved changes to storage item "${args[0]}"</span><br>`;
                 editor.removeEventListener("keydown", waitForExit);
@@ -175,6 +178,11 @@ const commands = {
 
     wait: (args) => { // in miliseconds
         window.waitTime = parseInt(args[0]);
+    },
+
+    end: (args) => {
+        window.terminateProgram = true;
+        terminal.innerHTML += `<span style="color: rgb(0, 255, 0);">Attempted to terminate code execution...</span><br>`;
     }
 
 }
@@ -194,6 +202,11 @@ function processCode(code, startingLine) {
 
     // Execute Code //
     for (let i = startingLine, len = lines.length; i < len; i++) {
+        if (window.terminateProgram) {
+            window.terminateProgram = false;
+            terminal.innerHTML += `<span style="color: rgb(255, 0, 255)">Execute process terminated (line ${i})</span><br>`;
+            return;
+        }
         let line = lines[i];
         // replace variables in line
         for (const variable in variables) {
@@ -351,6 +364,7 @@ document.addEventListener("keydown", (event) => {
             currentChar = 0;
             break;
         case "enter":
+            window.terminateProgram = false;
             processCode(inputLine, 0);
             history.push(inputLine);
             historyIndex = 0;
@@ -361,7 +375,7 @@ document.addEventListener("keydown", (event) => {
             if (event.ctrlKey || event.metaKey) {
                 navigator.clipboard.readText().then((text) => {
                     inputLine += text;
-                    inputElement.innerHTML = `> ${highlightSyntax(inputLine.slice(0, currentChar))}<span style="color: rgb(255, 255, 255);">_</span>${highlightSyntax(inputLine.slice(currentChar))}`.replace(/ /g, "&nbsp;");
+                    inputElement.innerHTML = `> ${highlightSyntax(inputLine.slice(0, currentChar))}<span style="color: rgb(255, 255, 255);">|</span>${highlightSyntax(inputLine.slice(currentChar))}`.replace(/ /g, "&nbsp;");
                     currentChar += text.length;
                 });
             }
@@ -386,6 +400,8 @@ document.addEventListener("keydown", (event) => {
                 currentChar = inputLine.length;
             }
             break;
+        case "escape":
+            window.terminateProgram = true;
         default:
             break;
     }
