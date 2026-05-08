@@ -45,7 +45,7 @@ const commands = {
     },
     print: (args) => { //print:<message>:<includenewline?>;
         terminal.innerHTML += args[0];
-        if (args[1]==="true") terminal.innerHTML += args[1];
+        if (args[1]==="true") terminal.innerHTML += "<br>";
     },
     def: (args) => { // def:<name>:<value>;
         variables[args[0]] = args[1];
