@@ -210,7 +210,7 @@ function processCode(code, startingLine) {
         let line = lines[i];
         // replace variables in line
         for (const variable in variables) {
-            line = line.replace(`.${variable}`, variables[variable]);
+            line = line.replaceAll(`.${variable}`, variables[variable]);
         }
         // simplify math expressions in line
         line = line.replace(/(-?\d+(?:\.\d+)?)\s*([\+\-\*\/\^\%])\s*(-?\d+(?:\.\d+)?)/g, (_, a, operator, b) => {
@@ -327,7 +327,7 @@ function highlightSyntax(code) {
     });
     // highlight variables in line
     for (const variable in variables) {
-        code = code.replace("." + variable, `<span style="color: rgb(0, 128, 255);">.${variable}</span>`);
+        code = code.replaceAll("." + variable, `<span style="color: rgb(0, 128, 255);">.${variable}</span>`);
     }
 
     // split line into command and arguments
