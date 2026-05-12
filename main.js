@@ -135,6 +135,7 @@ const commands = {
         const data = storage[args[0]];
         // unhide text editor
         document.getElementById("editorWindow").style.visibility = "visible";
+        terminal.style.visibility = "hidden";
         document.getElementById("info").innerText = `Editing storage item "${args[0]}" (press [esc] to save and exit).`;
         const editor = document.getElementById("editor");
         editor.textContent = data;
@@ -146,6 +147,7 @@ const commands = {
                 storage[args[0]] = document.getElementById("editor").value;
                 localStorage.setItem("GDOSStorage", JSON.stringify(storage))
                 document.getElementById("editorWindow").style.visibility = "hidden";
+                terminal.style.visibility = "visible";
                 editor.blur();
                 inTerminal = true;
                 terminal.innerHTML += `<span style="color: rgb(0, 255, 0);">Saved changes to storage item "${args[0]}"</span><br>`;
@@ -232,7 +234,7 @@ function processCode(code, startingLine) {
             }
         });
         // simplify logical expressions in line
-        line = line.replace(/(\d+)\s*([\=\~\<\>])\s*(\d+)/g, (_, a, operator, b) => {
+        line = line.replace(/(-?\d+(?:\.\d+)?)\s*([\=\~\<\>])\s*(-?\d+(?:\.\d+)?)/g, (_, a, operator, b) => {
             a = parseFloat(a);
             b = parseFloat(b);
             switch (operator) {
